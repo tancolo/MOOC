@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">IDouban</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_movies_fragment">Hello Movies fragment</string>
+    <string name="hello_books_fragment">Hello Books fragment</string>
+
+    <string name="tab_movies_fragment">Movie</string>
+    <string name="tab_books_fragment">Book</string>
+</resources>
