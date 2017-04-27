@@ -22,6 +22,8 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
+    public static final String TAG = HomeActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
