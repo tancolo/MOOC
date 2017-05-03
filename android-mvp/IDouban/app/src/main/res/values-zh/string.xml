@@ -9,5 +9,8 @@
 
     <string name="tab_movies_fragment">电影</string>
     <string name="tab_books_fragment">书籍</string>
+    <string name="hot_movies">正在热映</string>
+
+    <string name="string_no_note">暂无评分</string>
 
 </resources>

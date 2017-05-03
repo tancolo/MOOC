@@ -1,12 +1,13 @@
 package com.shrimpcolo.johnnytam.idouban.movie;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Johnny Tam on 2017/4/26.
  */
 
-public class Movie {
+public class Movie implements Serializable {
 
     /**
      * rating : {"max":10,"average":7.2,"stars":"40","min":0}

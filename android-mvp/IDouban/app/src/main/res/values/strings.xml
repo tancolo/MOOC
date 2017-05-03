@@ -8,4 +8,8 @@
 
     <string name="tab_movies_fragment">Movie</string>
     <string name="tab_books_fragment">Book</string>
+    <string name="hot_movies">Hot Movies</string>
+
+    <string name="string_no_note">No Rating</string>
+
 </resources>
