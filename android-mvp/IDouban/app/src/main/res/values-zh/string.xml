@@ -13,4 +13,17 @@
 
     <string name="string_no_note">暂无评分</string>
 
+    <string name="movie_info">影片信息</string>
+    <string name="movie_description">简介</string>
+    <string name="movie_directors">导演：</string>
+    <string name="movie_casts">主演：</string>
+    <string name="movie_aka">又名：</string>
+    <string name="movie_year">上映：</string>
+    <string name="movie_genres">类型：</string>
+    <string name="movie_during">片长：</string>
+    <string name="movie_countries">地区：</string>
+    <string name="movie_languages">语言：</string>
+    <string name="movie_imdb">IMDb：</string>
+    <string name="movie_not_find">无法获取</string>
+
 </resources>

@@ -10,12 +10,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.shrimpcolo.johnnytam.idouban.api.DoubanManager;
 import com.shrimpcolo.johnnytam.idouban.book.BooksFragment;
+import com.shrimpcolo.johnnytam.idouban.movie.MoviesContract;
 import com.shrimpcolo.johnnytam.idouban.movie.MoviesFragment;
+import com.shrimpcolo.johnnytam.idouban.movie.MoviesPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +59,21 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager){
         DoubanPagerAdapter pagerAdapter = new DoubanPagerAdapter(getSupportFragmentManager());
-        pagerAdapter.addFragment(new MoviesFragment(), getApplicationContext().getResources().getString(R.string.tab_movies_fragment));
+
+        MoviesFragment moviesFragment = MoviesFragment.newInstance();
+        Log.e(TAG, "setupViewPager, moviesFragment = " + moviesFragment);
+
+        pagerAdapter.addFragment(moviesFragment, getApplicationContext().getResources().getString(R.string.tab_movies_fragment));
         pagerAdapter.addFragment(new BooksFragment(), getApplicationContext().getResources().getString(R.string.tab_books_fragment));
         viewPager.setAdapter(pagerAdapter);
+
+        createPresenter(moviesFragment);
+    }
+
+    private void createPresenter(MoviesContract.View fragmentView){
+        Log.e(TAG, " createPresenter, fragmentView = " + fragmentView);
+        //Create the movies presenter
+        new MoviesPresenter(DoubanManager.createDoubanService(), fragmentView);
     }
 
 

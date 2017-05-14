@@ -18,26 +18,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.shrimpcolo.johnnytam.idouban.HomeActivity;
 import com.shrimpcolo.johnnytam.idouban.R;
-import com.shrimpcolo.johnnytam.idouban.api.DoubanManager;
-import com.shrimpcolo.johnnytam.idouban.api.IDoubanService;
+import com.shrimpcolo.johnnytam.idouban.beans.Movie;
+import com.shrimpcolo.johnnytam.idouban.moviedetail.MovieDetailActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MoviesFragment extends Fragment {
+public class MoviesFragment extends Fragment implements MoviesContract.View{
 
     private static final String TAG = MoviesFragment.class.getSimpleName();
 
@@ -47,36 +46,25 @@ public class MoviesFragment extends Fragment {
 
     private MoviesAdapter mMovieAdapter;
 
+    private MoviesContract.Presenter mPresenter;
+
     public MoviesFragment() {
         // Required empty public constructor
+    }
+
+    public static MoviesFragment newInstance(){
+        Log.e(HomeActivity.TAG, "MoviesFragment newInstance!");
+        return new MoviesFragment();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d(HomeActivity.TAG, TAG + "OnAttach: " + context.getClass().getSimpleName());
 
-        loadMovies(new Callback<HotMoviesInfo>() {
-            @Override
-            public void onResponse(Call<HotMoviesInfo> call, Response<HotMoviesInfo> response) {
-                Log.d(HomeActivity.TAG, "===> onResponse: Thread.Id = " + Thread.currentThread().getId());
-                mMovieList = response.body().getMovies();
-
-                //debug
-                Log.e(HomeActivity.TAG, "===> Response, size = " + mMovieList.size());
-                mMovieAdapter.setData(mMovieList);
-//                for (Movie movie : mMovieList) {
-//                    Log.d(TAG, "movie title: " + movie.getTitle());
-//                }
-
-            }
-
-            @Override
-            public void onFailure(Call<HotMoviesInfo> call, Throwable t) {
-                Log.d(HomeActivity.TAG, "===> onFailure: Thread.Id = "
-                        + Thread.currentThread().getId() + ", Error: " + t.getMessage());
-            }
-        });
+        Log.e(HomeActivity.TAG, "MoviesFragment onAttach, presenter: " + mPresenter);
+        if(mPresenter != null) {
+            mPresenter.start();
+        }
 
     }
 
@@ -107,9 +95,35 @@ public class MoviesFragment extends Fragment {
 
     }
 
-    private void loadMovies(Callback<HotMoviesInfo> callback) {
-        IDoubanService movieService = DoubanManager.createDoubanService();
-        movieService.searchHotMovies().enqueue(callback);
+    @Override
+    public void setPresenter(MoviesContract.Presenter presenter) {
+        mPresenter = presenter;
+    }
+
+    @Override
+    public void showMovies(List<Movie> movies) {
+        Log.e(HomeActivity.TAG,  TAG + " showMovies ");
+        mMovieAdapter.replaceData(movies);
+    }
+
+    @Override
+    public void showNoMovies() {
+
+    }
+
+    @Override
+    public void setLoadingIndicator(boolean active) {
+        if(getView() == null) return;
+
+        final ProgressBar progressBar = (ProgressBar) getView().findViewById(R.id.pgb_loading);
+
+        Log.e(HomeActivity.TAG, "\n\n setLoadingIndicator: active " + active);
+
+        if(active) {
+            progressBar.setVisibility(View.VISIBLE);
+        }else {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     //Movie's Adapter and view holder
@@ -122,7 +136,7 @@ public class MoviesFragment extends Fragment {
         private int layoutResId;
 
         public MoviesAdapter(Context context, @NonNull List<Movie> movies, @LayoutRes int layoutResId) {
-            this.movies = movies;
+            setList(movies);
             this.layoutResId = layoutResId;
             this.context = context;
         }
@@ -145,8 +159,12 @@ public class MoviesFragment extends Fragment {
             return movies.size();
         }
 
-        public void setData(List<Movie> movies) {
-            this.movies = movies;
+        private void setList(List<Movie> movies) {
+            this.movies =  checkNotNull(movies);
+        }
+
+        public void replaceData(List<Movie> movies) {
+            setList(movies);
             notifyDataSetChanged();
         }
     }
