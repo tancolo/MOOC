@@ -1,9 +1,11 @@
 package com.shrimpcolo.johnnytam.idouban.api;
 
+import com.shrimpcolo.johnnytam.idouban.beans.BooksInfo;
 import com.shrimpcolo.johnnytam.idouban.beans.HotMoviesInfo;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 /**
  * Created by Johnny Tam on 2017/4/27.
@@ -14,4 +16,7 @@ public interface IDoubanService {
 
     @GET("movie/in_theaters")
     Call<HotMoviesInfo> searchHotMovies();
+
+    @GET("book/search")
+    Call<BooksInfo> searchBooks(@Query("q") String name);
 }

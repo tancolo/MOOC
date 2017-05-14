@@ -26,4 +26,15 @@
     <string name="movie_imdb">IMDb：</string>
     <string name="movie_not_find">无法获取</string>
 
+    <string name="no_books">没有书籍数据</string>
+    <string name="prefix_subtitle">副标题: %1$s</string>
+    <string name="prefix_author">作者: %1$s</string>
+    <string name="prefix_pubdata">出版日期: %1$s</string>
+    <string name="prefix_pages">页数: %1$s</string>
+    <string name="prefix_price">定价: %1$s</string>
+
+    <string name="book_content_desc">内容简介</string>
+    <string name="book_author_desc">作者简介</string>
+    <string name="book_catalog">目录</string>
+
 </resources>

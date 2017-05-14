@@ -1,4 +1,4 @@
-package com.shrimpcolo.johnnytam.idouban.movie;
+package com.shrimpcolo.johnnytam.idouban.movies;
 
 import com.shrimpcolo.johnnytam.idouban.BasePresenter;
 import com.shrimpcolo.johnnytam.idouban.BaseView;
