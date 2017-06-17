@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.shrimpcolo.johnnytam.idouban.HomeActivity;
 import com.shrimpcolo.johnnytam.idouban.R;
 import com.shrimpcolo.johnnytam.idouban.beans.Book;
+import com.shrimpcolo.johnnytam.idouban.bookdetail.BookDetailActivity;
 import com.shrimpcolo.johnnytam.idouban.utils.ConstContent;
 import com.squareup.picasso.Picasso;
 
@@ -232,15 +233,15 @@ public class BooksFragment extends Fragment implements BooksContract.View {
             Context context = itemView.getContext();
             if (context == null) return;
 
-//            Intent intent = new Intent(context, BookDetailActivity.class);
-//            intent.putExtra(ConstContent.INTENT_EXTRA_BOOK, book);
-//
-//            if (context instanceof Activity) {
-//                Activity activity = (Activity) context;
-//
-//                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, bookImage, "cover").toBundle();
-//                ActivityCompat.startActivity(activity, intent, bundle);
-//            }
+            Intent intent = new Intent(context, BookDetailActivity.class);
+            intent.putExtra(ConstContent.INTENT_EXTRA_BOOK, book);
+
+            if (context instanceof Activity) {
+                Activity activity = (Activity) context;
+
+                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, bookImage, "cover").toBundle();
+                ActivityCompat.startActivity(activity, intent, bundle);
+            }
         }
     }
 
