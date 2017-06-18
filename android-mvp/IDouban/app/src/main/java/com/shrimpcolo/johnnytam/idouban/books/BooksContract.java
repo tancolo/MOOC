@@ -13,16 +13,22 @@ import java.util.List;
 public interface BooksContract {
 
     interface View extends BaseView<Presenter> {
-        void showBooks(List<Book> books);
+        void showRefreshedBooks(List<Book> books);
+
+        void showLoadedMoreBooks(List<Book> books);
 
         void showNoBooks();
 
-        void setLoadingIndicator(boolean active);
+        void showNoLoadedMoreBooks();
+
+        void setRefreshedIndicator(boolean active);
     }
 
     interface Presenter extends BasePresenter {
 
-        void loadBooks(boolean forceUpdate);
+        void loadRefreshedBooks(boolean forceUpdate);
+
+        void loadMoreBooks(int start);
 
     }
 

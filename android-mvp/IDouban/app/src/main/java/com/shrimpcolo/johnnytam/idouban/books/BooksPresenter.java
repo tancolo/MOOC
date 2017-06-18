@@ -36,25 +36,49 @@ public class BooksPresenter implements BooksContract.Presenter{
     }
 
     @Override
-    public void loadBooks(boolean forceUpdate) {
-        // Simplification for sample: a network reload will be forced on first load.
+    public void loadRefreshedBooks(boolean forceUpdate) {
         loadBooks(forceUpdate || mFirstLoad, true);
         mFirstLoad = false;
     }
 
     @Override
-    public void start() {
-        loadBooks(false);
+    public void loadMoreBooks(int start) {
+
+        mIDuobanService.searchBooks("黑客与画家", start).enqueue(new Callback<BooksInfo>() {
+            @Override
+            public void onResponse(Call<BooksInfo> call, Response<BooksInfo> response) {
+
+                List<Book> loadMoreList = response.body().getBooks();
+                //debug
+                Log.e(HomeActivity.TAG, "===> Load More Book: Response, size = " + loadMoreList.size());
+
+                processLoadMoreBooks(response.body().getBooks());
+            }
+
+            @Override
+            public void onFailure(Call<BooksInfo> call, Throwable t) {
+                Log.d(HomeActivity.TAG, "===> onFailure: Thread.Id = "
+                        + Thread.currentThread().getId() + ", Error: " + t.getMessage());
+
+                processLoadMoreEmptyBooks();
+            }
+        });
+
     }
 
-    private void loadBooks(boolean forceUpdate, final boolean showLoadingUI){
+    @Override
+    public void start() {
+        loadRefreshedBooks(false);
+    }
+
+    private void loadBooks(boolean forceUpdate, final boolean showLoadingUI) {
         if(showLoadingUI){
-            //BooksFragment需要显示Loading 界面
-            mBookView.setLoadingIndicator(true);
+            //BooksFragment需要显示Loading 指示器
+            mBookView.setRefreshedIndicator(true);
         }
 
-        if(forceUpdate){
-            mIDuobanService.searchBooks("黑客与画家").enqueue(new Callback<BooksInfo>() {
+        if(forceUpdate) {
+            mIDuobanService.searchBooks("黑客与画家", 0).enqueue(new Callback<BooksInfo>() {
                 @Override
                 public void onResponse(Call<BooksInfo> call, Response<BooksInfo> response) {
 
@@ -65,7 +89,7 @@ public class BooksPresenter implements BooksContract.Presenter{
 
                     //获取数据成功，Loading UI消失
                     if(showLoadingUI) {
-                        mBookView.setLoadingIndicator(false);
+                        mBookView.setRefreshedIndicator(false);
                     }
 
                     processBooks(response.body().getBooks());
@@ -78,27 +102,33 @@ public class BooksPresenter implements BooksContract.Presenter{
 
                     //获取数据成功，Loading UI消失
                     if(showLoadingUI) {
-                        mBookView.setLoadingIndicator(false);
+                        mBookView.setRefreshedIndicator(false);
                     }
-                    processEmptyTasks();
+                    processEmptyBooks();
                 }
             });
         }
     }
 
     private void processBooks(List<Book> books) {
-        if (books.isEmpty()) {
-            // Show a message indicating there are no movies for users
-            processEmptyTasks();
-        } else {
-            // Show the list of books
-            mBookView.showBooks(books);
-        }
+        if (books.isEmpty()) processEmptyBooks();// Show a message indicating there are no movies for users
+        else mBookView.showRefreshedBooks(books); // Show the list of books
     }
 
-    private void processEmptyTasks() {
+    private void processEmptyBooks() {
         //BooksFragment需要给出提示
         mBookView.showNoBooks();
+    }
+
+    private void processLoadMoreBooks(List<Book> books){
+
+        if (books.isEmpty()) processLoadMoreEmptyBooks();
+        else mBookView.showLoadedMoreBooks(books);
+    }
+
+    private void processLoadMoreEmptyBooks() {
+        Log.e(TAG, "LoadMore Empty books ");
+        mBookView.showNoLoadedMoreBooks();
     }
 
 }

@@ -78,7 +78,6 @@ public class HomeActivity extends AppCompatActivity {
         BooksPresenter booksPresenter = new BooksPresenter(DoubanManager.createDoubanService(), booksFragment);
     }
 
-
     static class DoubanPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragments = new ArrayList<>();
         private final List<String> mFrgmentTitles = new ArrayList<>();

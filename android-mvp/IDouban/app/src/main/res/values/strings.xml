@@ -36,4 +36,6 @@
     <string name="book_author_desc">作者简介</string>
     <string name="book_catalog">目录</string>
 
+    <string name="content_no_loadmore">No more content...</string>
+
 </resources>

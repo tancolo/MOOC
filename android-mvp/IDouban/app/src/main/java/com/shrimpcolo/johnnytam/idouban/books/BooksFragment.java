@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,14 +21,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.shrimpcolo.johnnytam.idouban.HomeActivity;
 import com.shrimpcolo.johnnytam.idouban.R;
 import com.shrimpcolo.johnnytam.idouban.beans.Book;
 import com.shrimpcolo.johnnytam.idouban.bookdetail.BookDetailActivity;
 import com.shrimpcolo.johnnytam.idouban.utils.ConstContent;
+import com.shrimpcolo.johnnytam.idouban.utils.EndlessRecyclerViewScrollListener;
+import com.shrimpcolo.johnnytam.idouban.utils.ScrollChildSwipeRefreshLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -48,6 +52,8 @@ public class BooksFragment extends Fragment implements BooksContract.View {
 
     private BookAdapter mBookAdapter;
 
+    private List<Book> mAdapterBooksData;
+
 
     public BooksFragment() {
         // Required empty public constructor
@@ -58,18 +64,10 @@ public class BooksFragment extends Fragment implements BooksContract.View {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if(mPresenter != null){
-            mPresenter.start();
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBookAdapter = new BookAdapter(new ArrayList<Book>(0), R.layout.recyclerview_book_item);
+        mBookAdapter = new BookAdapter(new ArrayList<>(0), R.layout.recyclerview_book_item);
+        mAdapterBooksData = new ArrayList<>();
     }
 
     @Override
@@ -80,6 +78,42 @@ public class BooksFragment extends Fragment implements BooksContract.View {
 
         mBookRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_books);
         mNoBooksView = view.findViewById(R.id.ll_no_books);
+
+        if (mBookRecyclerView != null) {
+            mBookRecyclerView.setHasFixedSize(true);
+            final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+            mBookRecyclerView.setLayoutManager(layoutManager);
+            mBookRecyclerView.setAdapter(mBookAdapter);
+
+            final ScrollChildSwipeRefreshLayout swipeRefreshLayout =
+                    (ScrollChildSwipeRefreshLayout) view.findViewById(R.id.book_refresh_layout);
+
+            swipeRefreshLayout.setColorSchemeColors(
+                    ContextCompat.getColor(getActivity(), R.color.colorPrimary),
+                    ContextCompat.getColor(getActivity(), R.color.colorAccent),
+                    ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)
+            );
+
+            // Set the scrolling view in the custom SwipeRefreshLayout.
+            swipeRefreshLayout.setScrollUpChild(mBookRecyclerView);
+
+            swipeRefreshLayout.setOnRefreshListener(() -> {
+                Log.e(HomeActivity.TAG, "\n\n onRefresh loadRefreshedBooks...");
+                mPresenter.loadRefreshedBooks(true);
+            });
+
+            EndlessRecyclerViewScrollListener endlessScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    Log.e(TAG, "page: " + page + ", totalItemsCount: " + totalItemsCount);
+                    mPresenter.loadMoreBooks(totalItemsCount);
+                }
+            };
+
+            mBookRecyclerView.addOnScrollListener(endlessScrollListener);
+
+        }
+
         return view;
     }
 
@@ -87,21 +121,32 @@ public class BooksFragment extends Fragment implements BooksContract.View {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (mBookRecyclerView != null) {
-            mBookRecyclerView.setHasFixedSize(true);
-            final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-            mBookRecyclerView.setLayoutManager(layoutManager);
-            mBookRecyclerView.setAdapter(mBookAdapter);
+        if(mPresenter != null){
+            mPresenter.start();
         }
+
     }
 
-
     @Override
-    public void showBooks(List<Book> books) {
-        mBookAdapter.replaceData(books);
+    public void showRefreshedBooks(List<Book> books) {
+
+        //If the refreshed data is a part of mAdapterBooksData, don't operate mBookAdapter
+        if(mAdapterBooksData.size() != 0
+                && books.get(0).getId().equals(mAdapterBooksData.get(0).getId())) {
+            return;
+        }
+
+        mAdapterBooksData.addAll(books);
+        mBookAdapter.replaceData(mAdapterBooksData);
 
         mBookRecyclerView.setVisibility(View.VISIBLE);
         mNoBooksView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showLoadedMoreBooks(List<Book> books) {
+        mAdapterBooksData.addAll(books);
+        mBookAdapter.replaceData(mAdapterBooksData);
     }
 
     @Override
@@ -111,16 +156,24 @@ public class BooksFragment extends Fragment implements BooksContract.View {
     }
 
     @Override
-    public void setLoadingIndicator(boolean active) {
+    public void showNoLoadedMoreBooks() {
+        //Log.e(TAG, "===> LoadMore Empty books thread id: " + Thread.currentThread().getId());
+        Toast.makeText(getActivity().getApplicationContext(),
+                getActivity().getString(R.string.content_no_loadmore), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void setRefreshedIndicator(boolean active) {
         if(getView() == null) return;
 
         Log.e(HomeActivity.TAG, TAG + "=> loading indicator: " + active);
-        final ProgressBar progressBar = (ProgressBar) getView().findViewById(R.id.pgb_book_loading);
-        if(active) {
-            progressBar.setVisibility(View.VISIBLE);
-        }else {
-            progressBar.setVisibility(View.GONE);
-        }
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.book_refresh_layout);
+
+        // Make sure setRefreshing() is called after the layout is done with everything else.
+        swipeRefreshLayout.post(() -> {
+            Log.e(HomeActivity.TAG, "swipeRefreshLayout run() active: " + active);
+            swipeRefreshLayout.setRefreshing(active);
+        });
     }
 
     @Override
