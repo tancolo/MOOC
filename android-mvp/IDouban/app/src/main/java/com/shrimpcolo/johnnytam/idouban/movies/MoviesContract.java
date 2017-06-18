@@ -11,14 +11,23 @@ public interface MoviesContract {
 
     interface View extends BaseView<Presenter> {
 
-        void showMovies(List<Movie> movies);
+        void showRefreshedMovies(List<Movie> movies);
+
+        void showLoadedMoreMovies(List<Movie> movies);
 
         void showNoMovies();
 
-        void setLoadingIndicator(boolean active);
+        void showNoLoadedMoreMovies();
+
+        void setRefreshedIndicator(boolean active);//indicator of SwipeRefreshLayout
     }
 
     interface Presenter extends BasePresenter {
-        void loadMovies(boolean forceUpdate);
+
+        void loadRefreshedMovies(boolean forceUpdate);
+
+        void loadMoreMovies(int movieStartIndex);
+
+        void cancelRetrofitRequest();
     }
 }

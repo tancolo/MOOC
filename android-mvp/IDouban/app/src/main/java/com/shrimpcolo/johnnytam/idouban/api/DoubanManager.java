@@ -30,7 +30,7 @@ public class DoubanManager {
         return new Retrofit.Builder()
                 .baseUrl(IDoubanService.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient)
+                //.client(httpClient)
                 .build();
     }
 }

@@ -38,5 +38,6 @@
     <string name="book_catalog">目录</string>
 
     <string name="content_no_loadmore">没有更多内容...</string>
+    <string name="no_movies">没有电影数据</string>
 
 </resources>
