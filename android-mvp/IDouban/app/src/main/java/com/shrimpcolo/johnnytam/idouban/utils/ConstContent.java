@@ -15,4 +15,6 @@ public final class ConstContent {
     public static final String INTENT_EXTRA_FRAGMENT_TYPE = "type"; //
 
     public static final String INTENT_EXTRA_WEBSITE_URL =  "website";
+
+    public static final int VIEW_TYPE_ITEM = 0;
 }
