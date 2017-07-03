@@ -5,19 +5,16 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
 import com.shrimpcolo.johnnytam.idouban.R;
+import com.shrimpcolo.johnnytam.idouban.base.BaseActivity;
+import com.shrimpcolo.johnnytam.idouban.base.BaseViewPagerAdapter;
 import com.shrimpcolo.johnnytam.idouban.beans.Book;
 import com.shrimpcolo.johnnytam.idouban.moviedetail.MovieDetailActivity;
 import com.shrimpcolo.johnnytam.idouban.utils.ConstContent;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 这里没有使用MVP， 因为Book数据是从书籍列表Item 传入。
@@ -25,30 +22,44 @@ import java.util.List;
  * 如果传入的是 书籍的某个Key (豆瓣自己定义的 book id)， 最好考虑使用MVP，P层请求网络数据，完成后
  * 再使用View.showBooks 来间接更新 View 中数据
  */
-public class BookDetailActivity extends AppCompatActivity {
+public class BookDetailActivity extends BaseActivity {
 
     private Book mBook;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_book_detail);
-
+    protected void initVariables() {
         //get the content from the intent.
         mBook = (Book) getIntent().getSerializableExtra(ConstContent.INTENT_EXTRA_BOOK);
+    }
 
-        //CollapsingToolbarLayout
-        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbar.setTitle(mBook.getTitle());
+    @Override
+    protected void initViews(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_book_detail);
 
-        ImageView ivImage = (ImageView) findViewById(R.id.ivImage);
-        Picasso.with(ivImage.getContext())
-                .load(mBook.getImages().getLarge())
-                .into(ivImage);
+        initCollapsingToolbarTitle();
+
+        showPicassoImage();
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
+        initTabLayout(viewPager);
+    }
+
+    private void initCollapsingToolbarTitle() {
+        //CollapsingToolbarLayout
+        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbar.setTitle(mBook.getTitle());
+    }
+
+    private void showPicassoImage() {
+        ImageView ivImage = (ImageView) findViewById(R.id.ivImage);
+        Picasso.with(ivImage.getContext())
+                .load(mBook.getImages().getLarge())
+                .into(ivImage);
+    }
+
+    private void initTabLayout(ViewPager viewPager) {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         if (tabLayout != null) {
             tabLayout.addTab(tabLayout.newTab());
@@ -66,10 +77,7 @@ public class BookDetailActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
     }
 
-    static class BookPagerAdapter extends FragmentPagerAdapter {
-
-        private final List<Fragment> mFragments = new ArrayList<>();
-        private final List<String> mFragmentTitles = new ArrayList<>();
+    static class BookPagerAdapter extends BaseViewPagerAdapter {
 
         public BookPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -78,21 +86,6 @@ public class BookDetailActivity extends AppCompatActivity {
         public void addFragment(Fragment fragment, String title) {
             mFragments.add(fragment);
             mFragmentTitles.add(title);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragments.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitles.get(position);
         }
     }
 

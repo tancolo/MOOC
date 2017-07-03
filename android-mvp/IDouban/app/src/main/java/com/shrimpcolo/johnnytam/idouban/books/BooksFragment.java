@@ -5,9 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
@@ -26,6 +23,9 @@ import android.widget.Toast;
 
 import com.shrimpcolo.johnnytam.idouban.HomeActivity;
 import com.shrimpcolo.johnnytam.idouban.R;
+import com.shrimpcolo.johnnytam.idouban.base.BaseFragment;
+import com.shrimpcolo.johnnytam.idouban.base.BaseRecycleViewAdapter;
+import com.shrimpcolo.johnnytam.idouban.base.BaseRecycleViewHolder;
 import com.shrimpcolo.johnnytam.idouban.beans.Book;
 import com.shrimpcolo.johnnytam.idouban.bookdetail.BookDetailActivity;
 import com.shrimpcolo.johnnytam.idouban.utils.ConstContent;
@@ -36,24 +36,15 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BooksFragment extends Fragment implements BooksContract.View {
+public class BooksFragment extends BaseFragment<Book> implements BooksContract.View {
     private static final String TAG = BooksFragment.class.getSimpleName();
 
     private BooksContract.Presenter mPresenter;
 
-    private RecyclerView mBookRecyclerView;
-
     private View mNoBooksView;
-
-    private BookAdapter mBookAdapter;
-
-    private List<Book> mAdapterBooksData;
-
 
     public BooksFragment() {
         // Required empty public constructor
@@ -64,94 +55,100 @@ public class BooksFragment extends Fragment implements BooksContract.View {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBookAdapter = new BookAdapter(new ArrayList<>(0), R.layout.recyclerview_book_item);
-        mAdapterBooksData = new ArrayList<>();
+    protected void initVariables() {
+        Log.e(HomeActivity.TAG,  TAG + " onCreate() -> initVariables");
+        mAdapterData = new ArrayList<>();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    protected void initRecycleViewAdapter() {
+        mAdapter = new BaseRecycleViewAdapter<>(new ArrayList<>(0),
+                R.layout.recyclerview_book_item,
+                BookViewHolder::new);
+    }
+
+    @Override
+    protected void initRecycleView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view  = inflater.inflate(R.layout.fragment_books, container, false);
+        mView  = inflater.inflate(R.layout.fragment_books, container, false);
 
-        mBookRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_books);
-        mNoBooksView = view.findViewById(R.id.ll_no_books);
+        mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_books);
+        mNoBooksView = mView.findViewById(R.id.ll_no_books);
 
-        if (mBookRecyclerView != null) {
-            mBookRecyclerView.setHasFixedSize(true);
-            final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-            mBookRecyclerView.setLayoutManager(layoutManager);
-            mBookRecyclerView.setAdapter(mBookAdapter);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
 
-            final ScrollChildSwipeRefreshLayout swipeRefreshLayout =
-                    (ScrollChildSwipeRefreshLayout) view.findViewById(R.id.book_refresh_layout);
-
-            swipeRefreshLayout.setColorSchemeColors(
-                    ContextCompat.getColor(getActivity(), R.color.colorPrimary),
-                    ContextCompat.getColor(getActivity(), R.color.colorAccent),
-                    ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)
-            );
-
-            // Set the scrolling view in the custom SwipeRefreshLayout.
-            swipeRefreshLayout.setScrollUpChild(mBookRecyclerView);
-
-            swipeRefreshLayout.setOnRefreshListener(() -> {
-                Log.e(HomeActivity.TAG, "\n\n onRefresh loadRefreshedBooks...");
-                mPresenter.loadRefreshedBooks(true);
-            });
-
-            EndlessRecyclerViewScrollListener endlessScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
-                @Override
-                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                    Log.e(TAG, "page: " + page + ", totalItemsCount: " + totalItemsCount);
-                    mPresenter.loadMoreBooks(totalItemsCount);
-                }
-            };
-
-            mBookRecyclerView.addOnScrollListener(endlessScrollListener);
-
-        }
-
-        return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    protected void initSwipeRefreshLayout() {
+        final ScrollChildSwipeRefreshLayout swipeRefreshLayout =
+                (ScrollChildSwipeRefreshLayout) mView.findViewById(R.id.book_refresh_layout);
 
+        swipeRefreshLayout.setColorSchemeColors(
+                ContextCompat.getColor(getActivity(), R.color.colorPrimary),
+                ContextCompat.getColor(getActivity(), R.color.colorAccent),
+                ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)
+        );
+
+        // Set the scrolling view in the custom SwipeRefreshLayout.
+        swipeRefreshLayout.setScrollUpChild(mRecyclerView);
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            Log.e(HomeActivity.TAG, "\n\n onRefresh loadRefreshedBooks...");
+            mPresenter.loadRefreshedBooks(true);
+        });
+    }
+
+    @Override
+    protected void initEndlessScrollListener() {
+        EndlessRecyclerViewScrollListener endlessScrollListener =
+                new EndlessRecyclerViewScrollListener(mLayoutManager) {
+
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                Log.e(TAG, "page: " + page + ", totalItemsCount: " + totalItemsCount);
+                mPresenter.loadMoreBooks(totalItemsCount);
+            }
+        };
+
+        mRecyclerView.addOnScrollListener(endlessScrollListener);
+    }
+
+    @Override
+    protected void startPresenter() {
         if(mPresenter != null){
             mPresenter.start();
         }
-
     }
 
     @Override
     public void showRefreshedBooks(List<Book> books) {
 
         //If the refreshed data is a part of mAdapterBooksData, don't operate mBookAdapter
-        if(mAdapterBooksData.size() != 0
-                && books.get(0).getId().equals(mAdapterBooksData.get(0).getId())) {
+        if(mAdapterData.size() != 0
+                && books.get(0).getId().equals(mAdapterData.get(0).getId())) {
             return;
         }
 
-        mAdapterBooksData.addAll(books);
-        mBookAdapter.replaceData(mAdapterBooksData);
+        mAdapterData.addAll(books);
+        mAdapter.replaceData(mAdapterData);
 
-        mBookRecyclerView.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
         mNoBooksView.setVisibility(View.GONE);
     }
 
     @Override
     public void showLoadedMoreBooks(List<Book> books) {
-        mAdapterBooksData.addAll(books);
-        mBookAdapter.replaceData(mAdapterBooksData);
+        mAdapterData.addAll(books);
+        mAdapter.replaceData(mAdapterData);
     }
 
     @Override
     public void showNoBooks() {
-        mBookRecyclerView.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.GONE);
         mNoBooksView.setVisibility(View.VISIBLE);
     }
 
@@ -181,47 +178,7 @@ public class BooksFragment extends Fragment implements BooksContract.View {
         mPresenter = presenter;
     }
 
-    static class BookAdapter extends RecyclerView.Adapter<BookViewHolder> {
-
-        private List<Book> mBooks;
-
-        @LayoutRes
-        private int layoutResId;
-
-        public BookAdapter(@NonNull List<Book> books, @LayoutRes int layoutResId){
-            setList(books);
-            this.layoutResId = layoutResId;
-        }
-
-        private void setList(List<Book> books){
-            mBooks = checkNotNull(books);
-        }
-
-        @Override
-        public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(layoutResId, parent, false);
-            return new BookViewHolder(itemView);
-        }
-
-        @Override
-        public void onBindViewHolder(BookViewHolder holder, int position) {
-            if(holder == null) return;
-
-            holder.updateBook(mBooks.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return mBooks.size();
-        }
-
-        public void replaceData(List<Book> books) {
-            setList(books);
-            notifyDataSetChanged();
-        }
-    }
-
-    static class BookViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    static class BookViewHolder extends BaseRecycleViewHolder<Book> implements View.OnClickListener {
 
         CardView cardView;
         ImageView bookImage;
@@ -231,7 +188,6 @@ public class BooksFragment extends Fragment implements BooksContract.View {
         TextView bookPubDate;
         TextView bookPages;
         TextView bookPrice;
-        Book book;
 
         public BookViewHolder(View itemView) {
             super(itemView);
@@ -247,13 +203,10 @@ public class BooksFragment extends Fragment implements BooksContract.View {
             itemView.setOnClickListener(this);
         }
 
-        public void updateBook(Book book) {
-
-            if (book == null) return;
-            this.book = book;
-
+        @Override
+        protected void onBindItem(Book book) {
             Context context = itemView.getContext();
-            if (context == null) return;
+            if (book == null || context == null) return;
 
             //get the prefix string
             String prefixSubTitle = context.getString(R.string.prefix_subtitle);
@@ -273,21 +226,20 @@ public class BooksFragment extends Fragment implements BooksContract.View {
                     .load(book.getImages().getLarge())
                     .placeholder(context.getResources().getDrawable(R.mipmap.ic_launcher))
                     .into(bookImage);
-
         }
 
         @Override
         public void onClick(View v) {
             Log.e(HomeActivity.TAG, "==>Book onClick....Item");
 
-            if (book == null) return;
+            if (itemContent == null) return;
             if (itemView == null) return;
 
             Context context = itemView.getContext();
             if (context == null) return;
 
             Intent intent = new Intent(context, BookDetailActivity.class);
-            intent.putExtra(ConstContent.INTENT_EXTRA_BOOK, book);
+            intent.putExtra(ConstContent.INTENT_EXTRA_BOOK, itemContent);
 
             if (context instanceof Activity) {
                 Activity activity = (Activity) context;
@@ -298,4 +250,12 @@ public class BooksFragment extends Fragment implements BooksContract.View {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mAdapterData.clear();
+        mPresenter.cancelRetrofitRequest();
+        Log.e(HomeActivity.TAG, TAG + "=> onDestroy()!!!");
+    }
 }

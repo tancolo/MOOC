@@ -63,9 +63,9 @@ public abstract class BaseFragment<T> extends Fragment {
 
     protected abstract void initVariables();
 
-    protected abstract void initRecycleView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
-
     protected abstract void initRecycleViewAdapter();
+
+    protected abstract void initRecycleView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
 
     protected abstract void initSwipeRefreshLayout();
 

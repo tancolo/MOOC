@@ -61,6 +61,16 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
     }
 
     @Override
+    protected void initRecycleViewAdapter() {
+        Log.e(HomeActivity.TAG,  TAG + " onCreate() -> initRecycleViewAdapter");
+        //create movie adapter
+        mAdapter = new BaseRecycleViewAdapter<>(new ArrayList<>(0),
+                R.layout.recyclerview_movies_item,
+                MovieViewHolder::new
+        );
+    }
+
+    @Override
     protected void initRecycleView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.e(HomeActivity.TAG,  TAG + " onCreateView() -> initRecycleView");
         // Inflate the layout for this fragment
@@ -74,16 +84,6 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
         mLayoutManager = new GridLayoutManager(getActivity().getApplicationContext(), 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-    }
-
-    @Override
-    protected void initRecycleViewAdapter() {
-        Log.e(HomeActivity.TAG,  TAG + " onCreate() -> initRecycleViewAdapter");
-        //create movie adapter
-        mAdapter = new BaseRecycleViewAdapter<>(new ArrayList<>(0),
-                R.layout.recyclerview_movies_item,
-                MovieViewHolder::new
-        );
     }
 
     @Override
@@ -194,10 +194,6 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
             mMovieRatingAverage = (TextView) itemView.findViewById(R.id.movie_average);
 
             itemView.setOnClickListener(this);
-        }
-
-        public void updateMovie(Movie movie) {
-
         }
 
         @Override

@@ -28,6 +28,8 @@ public class BooksPresenter implements BooksContract.Presenter{
 
     private boolean mFirstLoad = true;
 
+    private Call<BooksInfo> mBooksRetrofitCallback;
+
     public BooksPresenter(@NonNull IDoubanService booksService, @NonNull BooksContract.View bookFragment) {
         mIDuobanService = booksService;
         mBookView = bookFragment;
@@ -44,7 +46,8 @@ public class BooksPresenter implements BooksContract.Presenter{
     @Override
     public void loadMoreBooks(int start) {
 
-        mIDuobanService.searchBooks("黑客与画家", start).enqueue(new Callback<BooksInfo>() {
+        mBooksRetrofitCallback = mIDuobanService.searchBooks("黑客与画家", start);
+        mBooksRetrofitCallback.enqueue(new Callback<BooksInfo>() {
             @Override
             public void onResponse(Call<BooksInfo> call, Response<BooksInfo> response) {
 
@@ -67,6 +70,14 @@ public class BooksPresenter implements BooksContract.Presenter{
     }
 
     @Override
+    public void cancelRetrofitRequest() {
+        Log.e(HomeActivity.TAG, TAG + "=> cancelRetrofitRequest() isCanceled = "
+                + mBooksRetrofitCallback.isCanceled());
+
+        if(!mBooksRetrofitCallback.isCanceled()) mBooksRetrofitCallback.cancel();
+    }
+
+    @Override
     public void start() {
         loadRefreshedBooks(false);
     }
@@ -78,7 +89,8 @@ public class BooksPresenter implements BooksContract.Presenter{
         }
 
         if(forceUpdate) {
-            mIDuobanService.searchBooks("黑客与画家", 0).enqueue(new Callback<BooksInfo>() {
+            mBooksRetrofitCallback = mIDuobanService.searchBooks("黑客与画家", 0);
+            mBooksRetrofitCallback.enqueue(new Callback<BooksInfo>() {
                 @Override
                 public void onResponse(Call<BooksInfo> call, Response<BooksInfo> response) {
 
