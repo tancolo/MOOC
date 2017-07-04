@@ -29,5 +29,7 @@ public interface MoviesContract {
         void loadMoreMovies(int movieStartIndex);
 
         void cancelRetrofitRequest();
+
+        void unSubscribe();
     }
 }
