@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.shrimpcolo.johnnytam.idouban.HomeActivity;
-import com.shrimpcolo.johnnytam.idouban.api.DoubanManager;
 import com.shrimpcolo.johnnytam.idouban.api.IDoubanService;
 import com.shrimpcolo.johnnytam.idouban.beans.HotMoviesInfo;
 import com.shrimpcolo.johnnytam.idouban.beans.Movie;
@@ -12,11 +11,11 @@ import com.shrimpcolo.johnnytam.idouban.beans.Movie;
 import java.util.List;
 
 import retrofit2.Call;
-import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -36,12 +35,16 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
     private Subscription mSubscription;
 
+    private CompositeSubscription mCompositeSubscription;
+
     public MoviesPresenter(@NonNull IDoubanService moviesService, @NonNull MoviesContract.View moviesView) {
         mIDuobanService = checkNotNull(moviesService, "IDoubanServie cannot be null!");
         mMoviesView = checkNotNull(moviesView, "moviesView cannot be null!");
 
         Log.d(HomeActivity.TAG, TAG + ", MoviesPresenter: create!");
         mMoviesView.setPresenter(this);
+
+        mCompositeSubscription = new CompositeSubscription();
     }
 
     @Override
@@ -86,9 +89,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 //            }
 //        });
 
-        Observable<HotMoviesInfo> observable = DoubanManager.createDoubanService().searchHotMoviesWithRxJava(movieStartIndex);
-
-        observable
+        mCompositeSubscription.add(mIDuobanService.searchHotMoviesWithRxJava(movieStartIndex)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<HotMoviesInfo>() {
@@ -114,7 +115,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
                         processLoadMoreMovies(moreMoviesList);
                     }
-                });
+                }));
 
     }
 
@@ -126,9 +127,9 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
     @Override
     public void unSubscribe() {
-        Log.d(HomeActivity.TAG, TAG + "=> unSubscribe() isUnSubscribed = " + mSubscription.isUnsubscribed());
-        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
+        Log.d(HomeActivity.TAG, TAG + "=> unSubscribe all subscribe");
+        if (mCompositeSubscription != null) {
+            mCompositeSubscription.unsubscribe();
         }
     }
 
@@ -172,10 +173,8 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 //                }
 //            });
 
-            Observable<HotMoviesInfo> observable = mIDuobanService.searchHotMoviesWithRxJava(0);
-            Log.e(TAG, "observable: " + observable);
-
-            mSubscription = observable.subscribeOn(Schedulers.io())
+            mCompositeSubscription.add(mIDuobanService.searchHotMoviesWithRxJava(0)
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<HotMoviesInfo>() {
 
@@ -218,7 +217,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
                             processMovies(moviesList);
                         }
-                    });
+                    }));
         }
 
     }
