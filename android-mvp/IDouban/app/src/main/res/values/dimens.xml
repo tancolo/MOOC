@@ -17,5 +17,8 @@
     <dimen name="load_more_trigger_offset_google">88dp</dimen>
     <dimen name="load_more_final_offset_google">120dp</dimen>
     <dimen name="load_more_drawable_size_google">36dp</dimen>
+
+    <dimen name="profile_avatar_size">72dp</dimen>
+    <dimen name="profile_avatar_border">1dp</dimen>
     
 </resources>

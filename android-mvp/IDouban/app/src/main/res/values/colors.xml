@@ -11,4 +11,6 @@
     <color name="google_green">#34A853</color>
     <color name="google_yellow">#FBBC05</color>
 
+    <color name="color_profile_photo_border">#FF4081</color>
+
 </resources>

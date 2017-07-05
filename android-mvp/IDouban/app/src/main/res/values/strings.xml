@@ -39,4 +39,17 @@
     <string name="content_no_loadmore">No more content...</string>
     <string name="no_movies">No Movie Data</string>
 
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="navigation_movies">Movie</string>
+    <string name="navigation_book">Book</string>
+    <string name="navigation_blog">Blog</string>
+    <string name="navigation_about">AboutMe</string>
+    <string name="navigation_login">Login</string>
+    <string name="navigation_logout">Logout</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blog_fragment">Hello blog fragment</string>
+    <string name="hello_about_fragment">Hello about me fragment</string>
+
 </resources>

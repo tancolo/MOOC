@@ -40,4 +40,13 @@
     <string name="content_no_loadmore">没有更多内容...</string>
     <string name="no_movies">没有电影数据</string>
 
+    <string name="drawer_open" >打开</string>
+    <string name="drawer_close" >关闭</string>
+    <string name="navigation_movies">电影</string>
+    <string name="navigation_book">读书</string>
+    <string name="navigation_blog">博客</string>
+    <string name="navigation_about">关于</string>
+    <string name="navigation_login">登录</string>
+    <string name="navigation_logout">退出</string>
+
 </resources>
