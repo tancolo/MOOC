@@ -11,8 +11,10 @@ import com.shrimpcolo.johnnytam.idouban.beans.BooksInfo;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Johnny Tam on 2017/3/21.
@@ -30,11 +32,15 @@ public class BooksPresenter implements BooksContract.Presenter{
 
     private Call<BooksInfo> mBooksRetrofitCallback;
 
+    private CompositeSubscription mCompositeSubscription;
+
     public BooksPresenter(@NonNull IDoubanService booksService, @NonNull BooksContract.View bookFragment) {
         mIDuobanService = booksService;
         mBookView = bookFragment;
 
         mBookView.setPresenter(this);
+
+        mCompositeSubscription = new CompositeSubscription();
     }
 
     @Override
@@ -46,26 +52,32 @@ public class BooksPresenter implements BooksContract.Presenter{
     @Override
     public void loadMoreBooks(int start) {
 
-        mBooksRetrofitCallback = mIDuobanService.searchBooks("黑客与画家", start);
-        mBooksRetrofitCallback.enqueue(new Callback<BooksInfo>() {
-            @Override
-            public void onResponse(Call<BooksInfo> call, Response<BooksInfo> response) {
+        mCompositeSubscription.add(mIDuobanService.searchBooksWithRxJava("黑客与画家", start)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<BooksInfo>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.d(HomeActivity.TAG, "===> Load More Book: onCompleted");
+                    }
 
-                List<Book> loadMoreList = response.body().getBooks();
-                //debug
-                Log.e(HomeActivity.TAG, "===> Load More Book: Response, size = " + loadMoreList.size());
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(HomeActivity.TAG, "===> onError: Thread.Id = "
+                                + Thread.currentThread().getId() + ", Error: " + e.getMessage());
 
-                processLoadMoreBooks(response.body().getBooks());
-            }
+                        processLoadMoreEmptyBooks();
+                    }
 
-            @Override
-            public void onFailure(Call<BooksInfo> call, Throwable t) {
-                Log.d(HomeActivity.TAG, "===> onFailure: Thread.Id = "
-                        + Thread.currentThread().getId() + ", Error: " + t.getMessage());
+                    @Override
+                    public void onNext(BooksInfo booksInfo) {
+                        List<Book> loadMoreList = booksInfo.getBooks();
+                        //debug
+                        Log.d(HomeActivity.TAG, "===> Load More Book: onNext, size = " + loadMoreList.size());
 
-                processLoadMoreEmptyBooks();
-            }
-        });
+                        processLoadMoreBooks(loadMoreList);
+                    }
+                }));
 
     }
 
@@ -75,6 +87,14 @@ public class BooksPresenter implements BooksContract.Presenter{
                 + mBooksRetrofitCallback.isCanceled());
 
         if(!mBooksRetrofitCallback.isCanceled()) mBooksRetrofitCallback.cancel();
+    }
+
+    @Override
+    public void unSubscribe() {
+        Log.d(HomeActivity.TAG, TAG + "=> unSubscribe all subscribe");
+        if (mCompositeSubscription != null) {
+            mCompositeSubscription.unsubscribe();
+        }
     }
 
     @Override
@@ -89,36 +109,40 @@ public class BooksPresenter implements BooksContract.Presenter{
         }
 
         if(forceUpdate) {
-            mBooksRetrofitCallback = mIDuobanService.searchBooks("黑客与画家", 0);
-            mBooksRetrofitCallback.enqueue(new Callback<BooksInfo>() {
-                @Override
-                public void onResponse(Call<BooksInfo> call, Response<BooksInfo> response) {
+            mCompositeSubscription.add(mIDuobanService.searchBooksWithRxJava("黑客与画家", 0)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<BooksInfo>() {
+                        @Override
+                        public void onCompleted() {
+                            Log.d(HomeActivity.TAG, "===> Search Book: onNext " + ", showLoadingUI: " + showLoadingUI);
+                            //获取数据成功，Loading UI消失
+                            if(showLoadingUI) {
+                                mBookView.setRefreshedIndicator(false);
+                            }
+                        }
 
-                    List<Book> booksList = response.body().getBooks();
-                    //debug
-                    Log.e(HomeActivity.TAG, "===> Search Book: Response, size = " + booksList.size()
-                            + " showLoadingUI: " + showLoadingUI);
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d(HomeActivity.TAG, "===> search Book: onError: Thread.Id = "
+                                    + Thread.currentThread().getId() + ", Error: " + e.getMessage());
 
-                    //获取数据成功，Loading UI消失
-                    if(showLoadingUI) {
-                        mBookView.setRefreshedIndicator(false);
-                    }
+                            //获取数据成功，Loading UI消失
+                            if(showLoadingUI) {
+                                mBookView.setRefreshedIndicator(false);
+                            }
+                            processEmptyBooks();
+                        }
 
-                    processBooks(response.body().getBooks());
-                }
+                        @Override
+                        public void onNext(BooksInfo booksInfo) {
+                            List<Book> booksList = booksInfo.getBooks();
+                            //debug
+                            Log.d(HomeActivity.TAG, "===> Search Book: onNext, size = " + booksList.size());
 
-                @Override
-                public void onFailure(Call<BooksInfo> call, Throwable t) {
-                    Log.d(HomeActivity.TAG, "===> onFailure: Thread.Id = "
-                            + Thread.currentThread().getId() + ", Error: " + t.getMessage());
-
-                    //获取数据成功，Loading UI消失
-                    if(showLoadingUI) {
-                        mBookView.setRefreshedIndicator(false);
-                    }
-                    processEmptyBooks();
-                }
-            });
+                            processBooks(booksList);
+                        }
+                    }));
         }
     }
 

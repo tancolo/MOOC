@@ -32,6 +32,8 @@ public interface BooksContract {
 
         void cancelRetrofitRequest();
 
+        void unSubscribe();
+
     }
 
 

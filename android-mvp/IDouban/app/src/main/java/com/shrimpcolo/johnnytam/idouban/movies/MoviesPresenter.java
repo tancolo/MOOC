@@ -68,27 +68,6 @@ public class MoviesPresenter implements MoviesContract.Presenter {
             return;
         }
 
-//        mMoviesRetrofitCallback = mIDuobanService.searchHotMovies(movieStartIndex);
-//        mMoviesRetrofitCallback.enqueue(new Callback<HotMoviesInfo>() {
-//            @Override
-//            public void onResponse(Call<HotMoviesInfo> call, Response<HotMoviesInfo> response) {
-//                Log.d(HomeActivity.TAG, "===> onResponse: Thread.Id = " + Thread.currentThread().getId());
-//                List<Movie> moreMoviesList = response.body().getMovies();
-//                //debug
-//                Log.e(HomeActivity.TAG, "===> Response, size = " + moreMoviesList.size());
-//
-//                processLoadMoreMovies(moreMoviesList);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<HotMoviesInfo> call, Throwable t) {
-//                Log.d(HomeActivity.TAG, "===> onFailure: Thread.Id = "
-//                        + Thread.currentThread().getId() + ", Error: " + t.getMessage());
-//
-//                processLoadMoreEmptyMovies();
-//            }
-//        });
-
         mCompositeSubscription.add(mIDuobanService.searchHotMoviesWithRxJava(movieStartIndex)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -134,47 +113,21 @@ public class MoviesPresenter implements MoviesContract.Presenter {
     }
 
     private void loadMovies(boolean forceUpdate, final boolean showLoadingUI){
-        if(showLoadingUI){
-            //MoviesFragment需要显示Loading 界面
-            mMoviesView.setRefreshedIndicator(true);
-        }
+//        if(showLoadingUI){
+//            //MoviesFragment需要显示Loading 界面
+//            mMoviesView.setRefreshedIndicator(true);
+//        }
 
         if(forceUpdate) {
-//            mMoviesRetrofitCallback = mIDuobanService.searchHotMovies(0);
-//            mMoviesRetrofitCallback.enqueue(new Callback<HotMoviesInfo>() {
-//                @Override
-//                public void onResponse(Call<HotMoviesInfo> call, Response<HotMoviesInfo> response) {
-//                    Log.d(HomeActivity.TAG, "===> onResponse: Thread.Id = " + Thread.currentThread().getId());
-//                    List<Movie> moviesList = response.body().getMovies();
-//
-//                    mMovieTotal = response.body().getTotal();
-//                    //debug
-//                    Log.e(HomeActivity.TAG, "===> Response, size = " + moviesList.size()
-//                            + " showLoadingUI: " + showLoadingUI + ", total = " + mMovieTotal);
-//
-//                    //获取数据成功，Loading UI消失
-//                    if(showLoadingUI) {
-//                        mMoviesView.setRefreshedIndicator(false);
-//                    }
-//
-//                    processMovies(moviesList);
-//                }
-//
-//                @Override
-//                public void onFailure(Call<HotMoviesInfo> call, Throwable t) {
-//                    Log.d(HomeActivity.TAG, "===> onFailure: Thread.Id = "
-//                            + Thread.currentThread().getId() + ", Error: " + t.getMessage());
-//
-//                    //获取数据成功，Loading UI消失
-//                    if(showLoadingUI) {
-//                        mMoviesView.setRefreshedIndicator(false);
-//                    }
-//                    processEmptyMovies();
-//                }
-//            });
-
             mCompositeSubscription.add(mIDuobanService.searchHotMoviesWithRxJava(0)
                     .subscribeOn(Schedulers.io())
+                    .doOnSubscribe(() -> {
+                        Log.e(TAG, "doOnSubscribe");
+                        if(showLoadingUI){
+                            //MoviesFragment需要显示Loading 界面
+                            mMoviesView.setRefreshedIndicator(true);
+                        }
+                    })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<HotMoviesInfo>() {
 
