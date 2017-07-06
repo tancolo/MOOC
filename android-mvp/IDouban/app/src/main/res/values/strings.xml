@@ -48,10 +48,9 @@
     <string name="navigation_login">Login</string>
     <string name="navigation_logout">Logout</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blog_fragment">Hello blog fragment</string>
-    <string name="hello_about_fragment">Hello about me fragment</string>
-
     <string name="no_blog">No Blog</string>
+
+    <string name="about_me">App Demo参看github： \nhttps://github.com/tancolo/IDouban \n\n简书博客：\nhttp://www.jianshu.com/users/d614825bc8a1/latest_articles</string>
+    <string name="author_name">檀木丁</string>
 
 </resources>

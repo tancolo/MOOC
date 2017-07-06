@@ -204,7 +204,7 @@ public class HomeActivity extends BaseActivity {
         //init blog fragment
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         BlogFragment jianshuFragment = BlogFragment.newInstance();
-        AboutFragment aboutFragment = new AboutFragment();
+        AboutFragment aboutFragment = AboutFragment.newInstance();
 
         transaction.add(R.id.frame_container, jianshuFragment, ConstContent.MENU_BLOG);
         transaction.add(R.id.frame_container, aboutFragment, ConstContent.MENU_ABOUT);

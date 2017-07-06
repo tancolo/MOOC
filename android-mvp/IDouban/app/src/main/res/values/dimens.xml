@@ -20,5 +20,8 @@
 
     <dimen name="profile_avatar_size">72dp</dimen>
     <dimen name="profile_avatar_border">1dp</dimen>
+
+    <dimen name="profile_aboutme_size">100dp</dimen>
+    <dimen name="profile_aboutme_border">2dp</dimen>
     
 </resources>
