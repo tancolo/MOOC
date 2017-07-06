@@ -26,7 +26,7 @@
             android:name=".moviedetail.MovieDetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".moviewebsite.WebViewActivity"
+            android:name=".websiteview.WebViewActivity"
             android:theme="@style/WebsiteActivityNoActionBar" />
 
         <activity

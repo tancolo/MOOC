@@ -1,4 +1,4 @@
-package com.shrimpcolo.johnnytam.idouban.utils;
+package com.shrimpcolo.johnnytam.idouban.ui;
 
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;

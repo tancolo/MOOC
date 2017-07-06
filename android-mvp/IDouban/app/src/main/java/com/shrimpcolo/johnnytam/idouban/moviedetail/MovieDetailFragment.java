@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.shrimpcolo.johnnytam.idouban.HomeActivity;
 import com.shrimpcolo.johnnytam.idouban.R;
-import com.shrimpcolo.johnnytam.idouban.moviewebsite.WebViewActivity;
+import com.shrimpcolo.johnnytam.idouban.websiteview.WebViewActivity;
 import com.shrimpcolo.johnnytam.idouban.utils.ConstContent;
 
 /**

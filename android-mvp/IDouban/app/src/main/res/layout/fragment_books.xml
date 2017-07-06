@@ -1,4 +1,4 @@
-<com.shrimpcolo.johnnytam.idouban.utils.ScrollChildSwipeRefreshLayout
+<com.shrimpcolo.johnnytam.idouban.ui.ScrollChildSwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/book_refresh_layout"
@@ -39,4 +39,4 @@
         <!--android:indeterminate="true" />-->
 
 
-</com.shrimpcolo.johnnytam.idouban.utils.ScrollChildSwipeRefreshLayout>
+</com.shrimpcolo.johnnytam.idouban.ui.ScrollChildSwipeRefreshLayout>

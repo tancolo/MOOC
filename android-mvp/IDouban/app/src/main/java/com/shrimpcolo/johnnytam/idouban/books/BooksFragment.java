@@ -29,8 +29,8 @@ import com.shrimpcolo.johnnytam.idouban.base.BaseRecycleViewHolder;
 import com.shrimpcolo.johnnytam.idouban.beans.Book;
 import com.shrimpcolo.johnnytam.idouban.bookdetail.BookDetailActivity;
 import com.shrimpcolo.johnnytam.idouban.utils.ConstContent;
-import com.shrimpcolo.johnnytam.idouban.utils.EndlessRecyclerViewScrollListener;
-import com.shrimpcolo.johnnytam.idouban.utils.ScrollChildSwipeRefreshLayout;
+import com.shrimpcolo.johnnytam.idouban.ui.EndlessRecyclerViewScrollListener;
+import com.shrimpcolo.johnnytam.idouban.ui.ScrollChildSwipeRefreshLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

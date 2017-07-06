@@ -52,4 +52,6 @@
     <string name="hello_blog_fragment">Hello blog fragment</string>
     <string name="hello_about_fragment">Hello about me fragment</string>
 
+    <string name="no_blog">No Blog</string>
+
 </resources>

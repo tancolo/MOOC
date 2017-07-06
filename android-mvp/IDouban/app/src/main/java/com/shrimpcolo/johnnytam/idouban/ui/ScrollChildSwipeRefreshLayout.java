@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shrimpcolo.johnnytam.idouban.utils;
+package com.shrimpcolo.johnnytam.idouban.ui;
 
 import android.content.Context;
 import android.support.v4.view.ViewCompat;

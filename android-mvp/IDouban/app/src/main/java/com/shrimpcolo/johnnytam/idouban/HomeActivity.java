@@ -24,7 +24,9 @@ import com.shrimpcolo.johnnytam.idouban.aboutme.AboutFragment;
 import com.shrimpcolo.johnnytam.idouban.api.DoubanManager;
 import com.shrimpcolo.johnnytam.idouban.base.BaseActivity;
 import com.shrimpcolo.johnnytam.idouban.base.BaseViewPagerAdapter;
+import com.shrimpcolo.johnnytam.idouban.blogs.BlogContract;
 import com.shrimpcolo.johnnytam.idouban.blogs.BlogFragment;
+import com.shrimpcolo.johnnytam.idouban.blogs.BlogPresenter;
 import com.shrimpcolo.johnnytam.idouban.books.BooksContract;
 import com.shrimpcolo.johnnytam.idouban.books.BooksFragment;
 import com.shrimpcolo.johnnytam.idouban.books.BooksPresenter;
@@ -130,7 +132,7 @@ public class HomeActivity extends BaseActivity {
                     break;
             }
 
-            //for the all fragments
+            //for all fragments
             switch (item.getItemId()) {
                 case R.id.navigation_item_movies:
                     mViewPager.setCurrentItem(ConstContent.TAB_INDEX_MOVIES);
@@ -201,12 +203,19 @@ public class HomeActivity extends BaseActivity {
     private void initOthersFragment() {
         //init blog fragment
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        BlogFragment jianshuFragment = new BlogFragment();
+        BlogFragment jianshuFragment = BlogFragment.newInstance();
         AboutFragment aboutFragment = new AboutFragment();
 
         transaction.add(R.id.frame_container, jianshuFragment, ConstContent.MENU_BLOG);
         transaction.add(R.id.frame_container, aboutFragment, ConstContent.MENU_ABOUT);
         transaction.commit();
+
+        createOtherPresenter(jianshuFragment);
+
+    }
+    private void createOtherPresenter(BlogContract.View blogFragment) {
+        Log.d(TAG, "createOtherPresenter");
+        new BlogPresenter(DoubanManager.createDoubanService(), blogFragment);
     }
 
     private void initTabLayout() {
@@ -224,8 +233,8 @@ public class HomeActivity extends BaseActivity {
 
         MoviesFragment moviesFragment = MoviesFragment.newInstance();
         BooksFragment booksFragment = BooksFragment.newInstance();
-        Log.e(TAG, "setupViewPager, moviesFragment = " + moviesFragment);
-        Log.e(TAG, "setupViewPager, booksFragment = " + booksFragment);
+        //Log.e(TAG, "setupViewPager, moviesFragment = " + moviesFragment);
+        //Log.e(TAG, "setupViewPager, booksFragment = " + booksFragment);
 
         pagerAdapter.addFragment(moviesFragment, getApplicationContext().getResources().getString(R.string.tab_movies_fragment));
         pagerAdapter.addFragment(booksFragment, getApplicationContext().getResources().getString(R.string.tab_books_fragment));

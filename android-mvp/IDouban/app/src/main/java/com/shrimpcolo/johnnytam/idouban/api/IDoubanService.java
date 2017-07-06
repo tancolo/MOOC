@@ -1,11 +1,13 @@
 package com.shrimpcolo.johnnytam.idouban.api;
 
+import com.shrimpcolo.johnnytam.idouban.beans.BlogsInfo;
 import com.shrimpcolo.johnnytam.idouban.beans.BooksInfo;
 import com.shrimpcolo.johnnytam.idouban.beans.HotMoviesInfo;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 import rx.Observable;
 
 /**
@@ -26,4 +28,8 @@ public interface IDoubanService {
 
     @GET("book/search")
     Observable<BooksInfo> searchBooksWithRxJava(@Query("q") String name, @Query("start") int index);
+
+    @GET
+    Observable<BlogsInfo> getBlogWithRxJava(@Url String url);
+
 }

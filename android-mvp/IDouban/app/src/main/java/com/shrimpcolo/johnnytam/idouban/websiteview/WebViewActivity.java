@@ -1,4 +1,4 @@
-package com.shrimpcolo.johnnytam.idouban.moviewebsite;
+package com.shrimpcolo.johnnytam.idouban.websiteview;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
