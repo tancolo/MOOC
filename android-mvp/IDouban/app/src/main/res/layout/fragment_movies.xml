@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_margin="10dp"
     android:orientation="vertical"
-    tools:context="com.shrimpcolo.johnnytam.idouban.movies.MoviesFragment">
+    tools:context="com.shrimpcolo.johnnytam.ishuying.movies.MoviesFragment">
 
     <TextView
         android:id="@+id/textView"

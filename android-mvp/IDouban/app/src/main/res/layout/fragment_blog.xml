@@ -1,10 +1,10 @@
-<com.shrimpcolo.johnnytam.idouban.ui.ScrollChildSwipeRefreshLayout
+<com.shrimpcolo.johnnytam.ishuying.ui.ScrollChildSwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/blog_refresh_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.shrimpcolo.johnnytam.idouban.blogs.BlogFragment">
+    tools:context="com.shrimpcolo.johnnytam.ishuying.blogs.BlogFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,4 +30,4 @@
 
     </LinearLayout>
 
-</com.shrimpcolo.johnnytam.idouban.ui.ScrollChildSwipeRefreshLayout>
+</com.shrimpcolo.johnnytam.ishuying.ui.ScrollChildSwipeRefreshLayout>
