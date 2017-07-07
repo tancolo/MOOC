@@ -223,7 +223,7 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
 
             Picasso.with(context)
                     .load(movie.getImages().getLarge())
-                    .placeholder(context.getResources().getDrawable(R.mipmap.ic_launcher))
+                    .placeholder(context.getResources().getDrawable(R.mipmap.ic_ishuying))
                     .into(mMovieImage);
 
             mMovieTitle.setText(movie.getTitle());

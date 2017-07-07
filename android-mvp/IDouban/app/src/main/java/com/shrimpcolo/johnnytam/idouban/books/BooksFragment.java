@@ -224,7 +224,7 @@ public class BooksFragment extends BaseFragment<Book> implements BooksContract.V
 
             Picasso.with(context)
                     .load(book.getImages().getLarge())
-                    .placeholder(context.getResources().getDrawable(R.mipmap.ic_launcher))
+                    .placeholder(context.getResources().getDrawable(R.mipmap.ic_ishuying))
                     .into(bookImage);
         }
 
