@@ -23,4 +23,7 @@ public interface IDoubanService {
 
     @GET("book/search")
     Call<BooksInfo> searchBooks(@Query("q") String name, @Query("start") int index);
+
+    @GET("book/search")
+    Observable<BooksInfo> searchBooksWithRxJava(@Query("q") String name, @Query("start") int index);
 }
