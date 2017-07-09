@@ -39,7 +39,7 @@ public class BooksPresenter implements BooksContract.Presenter{
 
     @Override
     public void loadRefreshedBooks(boolean forceUpdate) {
-        loadBooks(forceUpdate || mFirstLoad, true);
+        //loadBooks(forceUpdate || mFirstLoad, true);
         mFirstLoad = false;
     }
 

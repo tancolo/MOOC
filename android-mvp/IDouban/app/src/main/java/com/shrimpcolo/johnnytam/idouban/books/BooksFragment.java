@@ -255,7 +255,7 @@ public class BooksFragment extends BaseFragment<Book> implements BooksContract.V
         super.onDestroy();
 
         mAdapterData.clear();
-        mPresenter.cancelRetrofitRequest();
+        //mPresenter.cancelRetrofitRequest();
         Log.e(HomeActivity.TAG, TAG + "=> onDestroy()!!!");
     }
 }

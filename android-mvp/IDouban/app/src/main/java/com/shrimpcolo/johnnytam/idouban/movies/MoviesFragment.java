@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
@@ -44,6 +43,8 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
     private View mNoMoviesView;
 
     private SwipeToLoadLayout mSwipeToLoadLayout;
+
+    private boolean mIgnoreFirstLoad = true;
 
     public MoviesFragment() {
         // Required empty public constructor
@@ -90,7 +91,13 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
     protected void initSwipeRefreshLayout() {
         Log.e(HomeActivity.TAG,  TAG + " onCreateView() -> initSwipeRefreshLayout");
         mSwipeToLoadLayout.setOnRefreshListener(() -> {
-            Log.e(HomeActivity.TAG, TAG + "=> onRefresh!");
+            //First time, we needn't reload movie data from network, because Presenter
+            //had loaded the data.
+            Log.e(HomeActivity.TAG, TAG + "=> onRefresh! mIgnoreFirstLoad = " + mIgnoreFirstLoad);
+            if (mIgnoreFirstLoad) {
+                mIgnoreFirstLoad = false;
+                return;
+            }
             mPresenter.loadRefreshedMovies(true);
         });
 
@@ -113,15 +120,15 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
         }
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        if(mPresenter != null) {
-            mPresenter.start();
-        }
-
-    }
+//    @Override
+//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+//        super.onActivityCreated(savedInstanceState);
+//
+//        if(mPresenter != null) {
+//            mPresenter.start();
+//        }
+//
+//    }
 
     @Override
     public void setPresenter(MoviesContract.Presenter presenter) {
@@ -170,8 +177,8 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
         if(getView() == null) return;
 
         Log.e(HomeActivity.TAG, TAG + "=> loading indicator: " + active);
-        mSwipeToLoadLayout.post(() -> mSwipeToLoadLayout.setRefreshing(active));
 
+        mSwipeToLoadLayout.post(() -> mSwipeToLoadLayout.setRefreshing(active));
     }
 
     static class MovieViewHolder extends BaseRecycleViewHolder<Movie> implements View.OnClickListener {
