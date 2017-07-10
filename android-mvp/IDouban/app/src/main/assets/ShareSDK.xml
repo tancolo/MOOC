@@ -56,8 +56,8 @@
 		 2、用户分享到微博的文本内容，必须做URLencode，内容不超过140个汉字，文本中不能包含“#话题词#”，同时文本中必须包含至少一个第三方分享到微博的网页URL，
 		且该URL只能是该第三方（调用方）绑定域下的URL链接，绑定域在“我的应用 － 应用信息 － 基本应用信息编辑 － 安全域名”里设置。-->
     <SinaWeibo
-        Id="1"
-        SortId="1"
+        Id="7"
+        SortId="7"
         AppKey="568898243"
         AppSecret="38a4f8204cc784f81f9f0daaf31e02e3"
         RedirectUrl="http://www.sharesdk.cn"
@@ -120,10 +120,10 @@
     
 	<!-- ShareByAppClient标识是否使用微博客户端分享，默认是false -->
 	<QQ
-        Id="7"
-        SortId="7"
-        AppId="100371282"
-        AppKey="aed9b0303e3ed1e27bae87c33761161d"
+        Id="1"
+        SortId="1"
+        AppId="1105675599"
+        AppKey="uGPnxxvsqJabfIVA"
         ShareByAppClient="true"
         Enable="true" />
     

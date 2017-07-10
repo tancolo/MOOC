@@ -15,7 +15,6 @@ public interface MovieDetailContract {
 
         void setMovieAltToFragment(String movieAlt);
 
-
     }
 
     interface Presenter extends BasePresenter {

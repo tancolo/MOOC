@@ -7,6 +7,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.shrimpcolo.johnnytam.ishuying.R;
@@ -15,6 +17,8 @@ import com.shrimpcolo.johnnytam.ishuying.base.BaseViewPagerAdapter;
 import com.shrimpcolo.johnnytam.ishuying.beans.Movie;
 import com.shrimpcolo.johnnytam.ishuying.utils.ConstContent;
 import com.squareup.picasso.Picasso;
+
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -43,11 +47,50 @@ public class MovieDetailActivity extends BaseActivity implements MovieDetailCont
     protected void initViews(Bundle savedInstanceState) {
         setContentView(R.layout.activity_movie_detail);
 
+        initToolbar();
+
         //setup view pager
         ViewPager viewPager = (ViewPager) findViewById(R.id.movie_viewpager);
         setupViewPager(viewPager);
 
         initTabLayout(viewPager);
+    }
+
+    private void initToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.movie_toolbar);
+        toolbar.inflateMenu(R.menu.menu_movie_detail);
+        toolbar.setOnMenuItemClickListener(item -> {
+
+            switch (item.getItemId()) {
+                case R.id.menu_action_share:
+                    Log.d(TAG, "Share the movie info!");
+                    showShare();
+                    break;
+                default :
+                    break;
+            }
+
+            return true;
+        });
+    }
+
+    private void showShare() {
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+
+        //oks.setTitle("标题"); // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间等使用
+        oks.setTitleUrl(mMovieAlt); // titleUrl是标题的网络链接，QQ和QQ空间等使用
+        oks.setText("我是分享文本"); // text是分享文本，所有平台都需要这个字段
+        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+        //oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+
+        //oks.setUrl("http://sharesdk.cn"); // url仅在微信（包括好友和朋友圈）中使用
+        //oks.setComment("我是测试评论文本"); // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+        //oks.setSite(getString(R.string.app_name)); // site是分享此内容的网站名称，仅在QQ空间使用
+        //oks.setSiteUrl("http://sharesdk.cn"); // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+
+        oks.show(this); // 启动分享GUI
     }
 
     private void initTabLayout(ViewPager viewPager) {
@@ -107,6 +150,7 @@ public class MovieDetailActivity extends BaseActivity implements MovieDetailCont
     @Override
     public void setMovieAltToFragment(String movieAlt) {
         mMovieAlt = movieAlt;
+        Log.d(TAG, "movieAlt: " + movieAlt);
     }
 
     @Override
