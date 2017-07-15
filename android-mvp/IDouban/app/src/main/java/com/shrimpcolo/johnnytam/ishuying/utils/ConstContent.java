@@ -27,4 +27,9 @@ public final class ConstContent {
     public static final int TAB_INDEX_BOOK = 1;
 
     public static final String API_BLOG_WEBSITE = "https://raw.githubusercontent.com/tancolo/MOOC/mvp-dev/android-mvp/IDouban/app/src/main/assets/jianshu.json";
+
+    public static final String FRAGMENT_LOGIN_TAG = "loginFragment";
+
+    public static final String FRAGMENT_LOGIN_DIALOG_TAG = "loginDialog";
+
 }

@@ -1,5 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingTranslation">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">IShuYing</string>
     <string name="action_settings">Settings</string>
 
@@ -55,5 +54,20 @@
     <string name="author_name">檀木丁</string>
 
     <string name="menu_share_title">share</string>
+
+    <string name="label_login_tips">What your see is what you get</string>
+    <string name="btn_login_text">Login</string>
+    <string name="btn_logout_text">Logout</string>
+    <string name="view_login_title_tip">You can see more</string>
+
+    <string name="view_login_weibo">Weibo</string>
+    <string name="view_login_wechat">Wechat</string>
+    <string name="view_login_qq">QQ</string>
+
+    <string name="view_login_profile_name">Your name</string>
+
+    <string name="auth_cancel">授权操作已取消</string>
+    <string name="auth_error">授权操作遇到错误，请阅读Logcat输出; \n 如微信登录，需要微信客户端</string>
+    <string name="auth_complete">授权成功，正在跳转登录操作…</string>
 
 </resources>

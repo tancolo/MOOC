@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_login_dialog" >
+
+    <RelativeLayout
+        android:id="@+id/rl_login_container"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:background="@drawable/bg_login"
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:id="@+id/tv_login_tip_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="#404040"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_login_tip_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_login_tip_1"
+            android:gravity="center"
+            android:text="@string/view_login_title_tip"
+            android:textColor="#404040"
+            android:textSize="10sp" />
+
+        <LinearLayout
+            android:id="@+id/ll_login_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_login_tip_2"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/tv_login_qq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/btn_login_qq"
+                android:gravity="center"
+                android:text="@string/view_login_qq"
+                android:textColor="#aeaeae"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_login_wechat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/btn_login_wechat"
+                android:gravity="center"
+                android:text="@string/view_login_wechat"
+                android:textColor="#aeaeae"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_login_weibo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/btn_login_weibo"
+                android:gravity="center"
+                android:text="@string/view_login_weibo"
+                android:textColor="#aeaeae"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/ib_login_off"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignRight="@id/rl_login_container"
+        android:layout_alignTop="@id/rl_login_container"
+        android:background="@color/transparent" />
+
+</RelativeLayout>

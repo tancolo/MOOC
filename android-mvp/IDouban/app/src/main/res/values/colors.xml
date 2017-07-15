@@ -13,4 +13,11 @@
 
     <color name="color_profile_photo_border">#FF4081</color>
 
+    <color name="color_btn_logout_normal">#FC5349</color>
+    <color name="color_btn_logout_pressed">#EB3126</color>
+    <color name="color_white">#FFFFFF</color>
+    <color name="black_half">#50000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="color_login_dialog">#5a5a5a</color>
+
 </resources>

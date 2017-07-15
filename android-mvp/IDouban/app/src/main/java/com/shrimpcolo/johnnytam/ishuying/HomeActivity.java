@@ -1,5 +1,6 @@
 package com.shrimpcolo.johnnytam.ishuying;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -30,6 +31,7 @@ import com.shrimpcolo.johnnytam.ishuying.blogs.BlogPresenter;
 import com.shrimpcolo.johnnytam.ishuying.books.BooksContract;
 import com.shrimpcolo.johnnytam.ishuying.books.BooksFragment;
 import com.shrimpcolo.johnnytam.ishuying.books.BooksPresenter;
+import com.shrimpcolo.johnnytam.ishuying.login.LoginActivity;
 import com.shrimpcolo.johnnytam.ishuying.movies.MoviesContract;
 import com.shrimpcolo.johnnytam.ishuying.movies.MoviesFragment;
 import com.shrimpcolo.johnnytam.ishuying.movies.MoviesPresenter;
@@ -158,6 +160,8 @@ public class HomeActivity extends BaseActivity {
                     break;
 
                 case R.id.navigation_item_login:
+                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivity(intent);
 
                     break;
                 case R.id.navigation_item_logout:

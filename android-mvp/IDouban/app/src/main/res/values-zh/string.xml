@@ -52,5 +52,19 @@
     <string name="no_blog">没有博客内容</string>
     <string name="about_me">App Demo参看github： \nhttps://github.com/tancolo/IDouban \n\n简书博客：\nhttp://www.jianshu.com/users/d614825bc8a1/latest_articles</string>
     <string name="author_name">檀木丁</string>
+    <string name="label_login_tips">所见即所得</string>
+    <string name="btn_login_text">登录</string>
+    <string name="btn_logout_text">退出</string>
+    <string name="view_login_title_tip">你可以解锁更多</string>
+
+    <string name="view_login_weibo">微博</string>
+    <string name="view_login_wechat">微信</string>
+    <string name="view_login_qq">QQ</string>
+
+    <string name="view_login_profile_name">你的名字</string>
+
+    <string name="auth_cancel">授权操作已取消</string>
+    <string name="auth_error">授权操作遇到错误，请阅读Logcat输出; \n 如微信登录，需要微信客户端</string>
+    <string name="auth_complete">授权成功，正在跳转登录操作…</string>
 
 </resources>

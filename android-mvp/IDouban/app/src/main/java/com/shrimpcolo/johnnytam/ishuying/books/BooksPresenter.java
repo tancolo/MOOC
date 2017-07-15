@@ -58,12 +58,12 @@ public class BooksPresenter implements BooksContract.Presenter{
                 .subscribe(new Subscriber<BooksInfo>() {
                     @Override
                     public void onCompleted() {
-                        Log.d(HomeActivity.TAG, "===> Load More Book: onCompleted");
+                        Log.d(TAG, "===> Load More Book: onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(HomeActivity.TAG, "===> onError: Thread.Id = "
+                        Log.d(TAG, "===> onError: Thread.Id = "
                                 + Thread.currentThread().getId() + ", Error: " + e.getMessage());
 
                         processLoadMoreEmptyBooks();
@@ -73,7 +73,7 @@ public class BooksPresenter implements BooksContract.Presenter{
                     public void onNext(BooksInfo booksInfo) {
                         List<Book> loadMoreList = booksInfo.getBooks();
                         //debug
-                        Log.d(HomeActivity.TAG, "===> Load More Book: onNext, size = " + loadMoreList.size());
+                        Log.d(TAG, "===> Load More Book: onNext, size = " + loadMoreList.size());
 
                         processLoadMoreBooks(loadMoreList);
                     }

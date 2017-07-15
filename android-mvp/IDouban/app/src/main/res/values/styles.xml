@@ -22,4 +22,9 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="login_window_anim">
+        <item name="android:windowEnterAnimation">@anim/alpha_in</item>
+        <item name="android:windowExitAnimation">@anim/alpha_out</item>
+    </style>
+
 </resources>
