@@ -99,4 +99,12 @@ public class LoginDialogFragment extends DialogFragment implements LoginContract
         this.presenter = presenter;
         Log.e(TAG, "===> setPresenter, presenter = " + presenter);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Log.e(TAG, "===> onDestroy ");
+
+    }
 }

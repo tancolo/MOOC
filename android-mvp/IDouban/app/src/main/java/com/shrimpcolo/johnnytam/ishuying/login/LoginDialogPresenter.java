@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.shrimpcolo.johnnytam.ishuying.api.IDoubanService;
+import com.shrimpcolo.johnnytam.ishuying.beans.PlatformWrapper;
 import com.shrimpcolo.johnnytam.ishuying.beans.UserInfo;
 
 import java.util.HashMap;
@@ -11,20 +12,24 @@ import java.util.Iterator;
 import java.util.Map;
 
 import cn.sharesdk.framework.Platform;
-import cn.sharesdk.framework.PlatformActionListener;
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.sina.weibo.SinaWeibo;
 import cn.sharesdk.tencent.qq.QQ;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter, PlatformActionListener {
+public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter {
 
     private static final String TAG = LoginDialogPresenter.class.getSimpleName();
 
     private LoginContract.LoginDialogView loginDialogView;
 
     private IDoubanService loginService;
+
+    private CompositeSubscription compositeSubscription;
 
     public LoginDialogPresenter(@NonNull IDoubanService loginService,
                                 @NonNull LoginContract.LoginDialogView loginDialog) {
@@ -33,6 +38,8 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter,
         this.loginDialogView = checkNotNull(loginDialog, "login Dialog view cannot be null!");
 
         this.loginDialogView.setPresenter(this);
+
+        compositeSubscription = new CompositeSubscription();
     }
 
 
@@ -44,7 +51,43 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter,
     @Override
     public void doLoginWithQQ() {
         Platform qqPlatform = ShareSDK.getPlatform(QQ.NAME);
-        authorize(qqPlatform);
+
+        compositeSubscription.add(ShareSdkObservable.login(qqPlatform)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<PlatformWrapper>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.e(TAG, "onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, Log.getStackTraceString(e));
+                    }
+
+                    @Override
+                    public void onNext(PlatformWrapper platformWrapper) {
+                        if (Platform.ACTION_USER_INFOR == platformWrapper.getAction()) {
+                            Log.e(TAG, "====> onNext " + platformWrapper.getPlatform().getName() + ", Thread ID: " + Thread.currentThread().getId());
+                            Log.e(TAG, "====> onNext hashmap: " + platformWrapper.getHashMap());
+
+                            if (platformWrapper.getHashMap() != null) {
+                                debugUserInfo(platformWrapper.getPlatform(), platformWrapper.getHashMap());
+                            }
+                        }
+                    }
+                }));
+
+
+
+        //authorize(qqPlatform);
+    }
+
+    @Override
+    public void unSubscribe() {
+        if (compositeSubscription != null) {
+            compositeSubscription.unsubscribe();
+        }
     }
 
     //执行授权,获取用户信息
@@ -54,32 +97,11 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter,
             return;
         }
 
-        plat.setPlatformActionListener(this);
+        //plat.setPlatformActionListener(this);
         //关闭SSO授权
         plat.SSOSetting(false);
         plat.showUser(null);
-    }
 
-    @Override
-    public void onComplete(Platform platform, int action, HashMap<String, Object> hashMap) {
-        if (action == Platform.ACTION_USER_INFOR) {
-            Log.e(TAG, "====> onComplete" + platform.getName() + ", Thread ID: " + Thread.currentThread().getId());
-
-            debugUserInfo(platform, hashMap);
-        }
-    }
-
-    @Override
-    public void onError(Platform platform, int action, Throwable throwable) {
-        if (action == Platform.ACTION_USER_INFOR) {
-            Log.e(TAG, "====> onError" + platform.getName() + ", Thread ID: " + Thread.currentThread().getId());
-        }
-        throwable.printStackTrace();
-    }
-
-    @Override
-    public void onCancel(Platform platform, int action) {
-        Log.e(TAG, "====> onCancel" + platform.getName() + ", Thread ID: " + Thread.currentThread().getId());
     }
 
     private void debugUserInfo(Platform platform, HashMap<String, Object> hashMap) {
@@ -125,4 +147,5 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter,
         Log.e(TAG, userInfo.toString());
 
     }
+
 }

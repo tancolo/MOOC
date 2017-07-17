@@ -30,6 +30,8 @@ public interface LoginContract {
 
     interface  LoginDialogPresenter extends BasePresenter {
         void doLoginWithQQ();
+
+        void unSubscribe();
     }
 
 }

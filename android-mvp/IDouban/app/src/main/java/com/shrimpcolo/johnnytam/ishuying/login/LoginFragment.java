@@ -30,6 +30,8 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView {
 
     private LoginDialogFragment loginDialogFragment;
 
+    private LoginDialogPresenter loginDialogPresenter;
+
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -71,7 +73,7 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView {
     }
 
     private void createPresenter(LoginContract.LoginDialogView dialogView) {
-        new LoginDialogPresenter(DoubanManager.createDoubanService(), dialogView);
+        loginDialogPresenter = new LoginDialogPresenter(DoubanManager.createDoubanService(), dialogView);
     }
 
     @Override
@@ -97,5 +99,12 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView {
     @Override
     public void setupName(String name) {
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+        loginDialogPresenter.unSubscribe();
     }
 }
