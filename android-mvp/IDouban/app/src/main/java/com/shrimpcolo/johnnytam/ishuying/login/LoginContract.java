@@ -32,9 +32,11 @@ public interface LoginContract {
 
         void loadLoginData();
 
-//        void popupLoginDialog();
+        void doLogoutWithQQ();
 
         void updateLoginInfo(UserInfo userInfo);
+
+        void updateLogoutInfo();
 
     }
 

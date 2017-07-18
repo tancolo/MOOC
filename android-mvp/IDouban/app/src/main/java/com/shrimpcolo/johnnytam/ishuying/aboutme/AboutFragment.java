@@ -53,7 +53,6 @@ public class AboutFragment extends Fragment implements LoginListener{
         Picasso.with(getActivity())
                 .load(R.mipmap.dayuhaitang)
                 .transform(new CircleTransformation(width, color))
-                .placeholder(R.mipmap.ic_ishuying)
                 .into(profileImage);
 
         return view;
@@ -71,7 +70,7 @@ public class AboutFragment extends Fragment implements LoginListener{
 
     @Override
     public void onLogoutSuccess() {
-
+        resetProfile();
     }
 
     private void updateProfile() {
@@ -83,7 +82,6 @@ public class AboutFragment extends Fragment implements LoginListener{
         int width = getResources().getDimensionPixelOffset(R.dimen.profile_aboutme_border);
         int color = getResources().getColor(R.color.color_profile_photo_border);
 
-
         Picasso.with(getActivity())
                 .load(userInfo.getUserIcon())
                 .resize(size, size)
@@ -92,5 +90,20 @@ public class AboutFragment extends Fragment implements LoginListener{
                 .into(profileImage);
 
         profileName.setText(userInfo.getUserName());
+    }
+
+    private void resetProfile() {
+
+        int size = getResources().getDimensionPixelOffset(R.dimen.profile_aboutme_size);
+        int width = getResources().getDimensionPixelOffset(R.dimen.profile_aboutme_border);
+        int color = getResources().getColor(R.color.color_profile_photo_border);
+
+        Picasso.with(getActivity())
+                .load(R.mipmap.dayuhaitang)
+                .resize(size, size)
+                .transform(new CircleTransformation(width, color))
+                .into(profileImage);
+
+        profileName.setText(R.string.author_name);
     }
 }

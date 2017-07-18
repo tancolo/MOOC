@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:text="大鱼"
+        android:text="@string/view_login_profile_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textSize="20sp" />
 

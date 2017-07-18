@@ -70,4 +70,9 @@
     <string name="auth_error">授权操作遇到错误，请阅读Logcat输出; \n 如微信登录，需要微信客户端</string>
     <string name="auth_complete">授权成功，正在跳转登录操作…</string>
 
+    <string name="view_set_logout_success">您已成功退出!</string>
+    <string name="view_set_login_success">您已成功登录!</string>
+
+    <string name="toast_login_error_network">授权出现问题，再试一次吧!</string>
+
 </resources>

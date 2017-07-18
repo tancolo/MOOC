@@ -4,13 +4,14 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.shrimpcolo.johnnytam.ishuying.IShuYingApplication;
+import com.shrimpcolo.johnnytam.ishuying.R;
 import com.shrimpcolo.johnnytam.ishuying.api.IDoubanService;
 import com.shrimpcolo.johnnytam.ishuying.beans.PlatformWrapper;
 import com.shrimpcolo.johnnytam.ishuying.beans.UserInfo;
 import com.shrimpcolo.johnnytam.ishuying.utils.FileUtils;
+import com.shrimpcolo.johnnytam.ishuying.utils.ToastUtils;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import cn.sharesdk.framework.Platform;
@@ -68,6 +69,7 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
 
                     @Override
                     public void onError(Throwable e) {
+                        ToastUtils.showShortToast(R.string.toast_login_error_network);
                         Log.e(TAG, Log.getStackTraceString(e));
                     }
 
@@ -117,9 +119,8 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
         //解析各种平台的数据，统一放到UserInfo中使用
         UserInfo userInfo = new UserInfo();
 
-        Iterator ite = hashMap.entrySet().iterator();
-        while (ite.hasNext()) {
-            Map.Entry entry = (Map.Entry) ite.next();
+        for (Object o : hashMap.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
             Object key = entry.getKey();
             Object value = entry.getValue();
             //Log.e(TAG, " " + key + "： " + value);
@@ -137,13 +138,13 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
 
                 }
             } else if (platform.equals(SinaWeibo.NAME)) {
-                if(key.equals("name")) {
+                if (key.equals("name")) {
                     userInfo.setUserName((String) value);
 
-                }else if(key.equals("avatar_hd")) {
+                } else if (key.equals("avatar_hd")) {
                     userInfo.setUserIcon((String) value);
 
-                }else if(key.equals("gender")) {
+                } else if (key.equals("gender")) {
                     UserInfo.Gender gender = value.equals("m") ? UserInfo.Gender.MALE : UserInfo.Gender.FEMALE;
                     userInfo.setUserGender(gender);
                 }

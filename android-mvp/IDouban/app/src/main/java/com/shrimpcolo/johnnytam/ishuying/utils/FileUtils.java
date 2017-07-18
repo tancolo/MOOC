@@ -62,6 +62,17 @@ public class FileUtils {
         }
     }
 
+
+    /**
+     * 清除个人信息
+     *
+     */
+    public static void clearSerializableUser() {
+        if (FileUtils.checkSdCardExist()) {
+            IShuYingApplication.getInstance().deleteFile(ConstContent.APP_USER_INFO_FILE);
+        }
+    }
+
     /**
      * 恢复用户信息
      *

@@ -58,6 +58,9 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView {
         RxView.clicks(view.findViewById(R.id.btn_login))
                 .subscribe(aVoid -> showDialogFragment(true));
 
+        RxView.clicks(view.findViewById(R.id.btn_logout))
+                .subscribe(aVoid -> doLogoutWithQQ());
+
         loginDialogFragment = LoginDialogFragment.newInstance();
         createPresenter(loginDialogFragment);
 
@@ -76,6 +79,10 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView {
         }else {
             loginDialogFragment.dismiss();
         }
+    }
+
+    private void doLogoutWithQQ() {
+        presenter.doLogoutWithQQ();
     }
 
     private void createPresenter(LoginContract.LoginDialogView dialogView) {
@@ -116,7 +123,7 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView {
     }
 
     @Override
-    public void setupPhoto(String imageUrl) {
+    public void setupPhoto(String imageUrl) {//Use for Login success
 
         try {
             ImageView userPhoto = (ImageView) getView().findViewById(R.id.img_login_photo);
@@ -139,7 +146,7 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView {
     }
 
     @Override
-    public void setupName(String name) {
+    public void setupName(String name) { //Use for Login success
         TextView userName = (TextView) getView().findViewById(R.id.txt_login_name);
         userName.setText(name);
     }
@@ -150,8 +157,8 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView {
         intent.putExtra(ConstContent.INTENT_PARAM_IS_LOGIN, isLogin);
 
         LoginActivity loginActivity = (LoginActivity) getActivity();
-        Log.e(TAG, "loginActivity = " + loginActivity);
-        if (loginActivity != null && isLogin) {
+        Log.d(TAG, "loginStatusChanged send broadcast to HomeActivity: isLogin = " + isLogin);
+        if (loginActivity != null) {
             loginActivity.getLocalBroadcastManager().sendBroadcast(intent);
         }
     }

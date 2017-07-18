@@ -158,6 +158,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
 
             //for all fragments
             switch (item.getItemId()) {
+
                 case R.id.navigation_item_movies:
                     mViewPager.setCurrentItem(ConstContent.TAB_INDEX_MOVIES);
 
@@ -183,13 +184,16 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
 
                 case R.id.navigation_item_login:
                     Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                    //intent.putExtra(ConstContent.INTENT_PARAM_LOGIN_LOGOUT_TYPE, ConstContent.INTENT_PARAM_TYPE_LOGIN);
                     startActivity(intent);
                     //startActivityForResult(intent, ConstContent.LOGIN_REQUEST_CODE);
 
                     break;
-                case R.id.navigation_item_logout:
-
-                    break;
+//                case R.id.navigation_item_logout://not used
+//                    intent = new Intent(HomeActivity.this, LoginActivity.class);
+//                    intent.putExtra(ConstContent.INTENT_PARAM_LOGIN_LOGOUT_TYPE, ConstContent.INTENT_PARAM_TYPE_LOGIN);
+//                    startActivity(intent);
+//                    break;
                 default:
                     break;
             }
@@ -216,7 +220,6 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
                 .load(R.mipmap.dayuhaitang)
                 .resize(size, size)
                 .transform(new CircleTransformation(width, color))
-                .placeholder(R.mipmap.ic_ishuying)
                 .into(mProfileView);
 
         if (mProfileView != null) {
@@ -315,6 +318,10 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
 
     @Override
     public void onLogoutSuccess() {
+
+        //update Navigation head view, photo & name to default status.
+        updateHeaderViewProfile();
+
         Observable.from(mLoginListenerList)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(LoginListener::onLogoutSuccess);
@@ -355,29 +362,6 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ConstContent.LOGIN_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-
-                UserInfo userInfo = (UserInfo) data.getSerializableExtra("userInfo");
-
-                Log.e(TAG, "url: " + userInfo.getUserIcon() + ",  name: " + userInfo.getUserName());
-
-                Picasso.with(this).load(userInfo.getUserIcon()).into(mProfileView);
-                mProfileName.setText(userInfo.getUserName());
-
-                //callback for about me
-                //iSetupProfile.setupProfile(userInfo);
-
-            }
-        }
-    }
-
-
     class LoginStateChangedLocalReceiver extends BroadcastReceiver {
 
         @Override
@@ -389,7 +373,11 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
                 boolean isLogin = intent.getBooleanExtra(ConstContent.INTENT_PARAM_IS_LOGIN, false);
                 Log.d(TAG, "isLogin = " + isLogin);
 
-                onLoginSuccess();
+                if (isLogin) {
+                    onLoginSuccess();
+                } else {
+                    onLogoutSuccess();
+                }
             }
 
         }
@@ -404,14 +392,26 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         int width = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_border);
         int color = getResources().getColor(R.color.color_profile_photo_border);
 
-        Picasso.with(this)
-                .load(userInfo.getUserIcon())
-                .resize(size, size)
-                .transform(new CircleTransformation(width, color))
-                .placeholder(R.mipmap.ic_ishuying)
-                .into(mProfileView);
+        if (userInfo != null) {//Login status
+            Picasso.with(this)
+                    .load(userInfo.getUserIcon())
+                    .resize(size, size)
+                    .transform(new CircleTransformation(width, color))
+                    .placeholder(R.mipmap.ic_ishuying)
+                    .into(mProfileView);
 
-        mProfileName.setText(userInfo.getUserName());
+            mProfileName.setText(userInfo.getUserName());
+
+        } else { //Logout status ==> default status
+            Picasso.with(this)
+                    .load(R.mipmap.dayuhaitang)
+                    .resize(size, size)
+                    .transform(new CircleTransformation(width, color))
+                    .into(mProfileView);
+
+            mProfileName.setText(R.string.author_name);
+        }
+
     }
 
     @Override

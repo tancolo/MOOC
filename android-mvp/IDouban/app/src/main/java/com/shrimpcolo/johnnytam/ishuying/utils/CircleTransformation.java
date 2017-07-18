@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.ColorInt;
-import android.util.Log;
 
 import com.squareup.picasso.Transformation;
 
@@ -46,13 +45,13 @@ public class CircleTransformation implements Transformation {
         if (squareBitmap != source) {
             source.recycle();
         }
-        Log.e(TAG, "transform() source.getConfig = " + source.getConfig()
-        + "\n "
-        + Log.getStackTraceString(new Throwable()));
-
-        if (source.getConfig() == null) {
-            return null;
-        }
+//        Log.e(TAG, "transform() source.getConfig = " + source.getConfig()
+//        + "\n "
+//        + Log.getStackTraceString(new Throwable()));
+//
+//        if (source.getConfig() == null) {
+//            return null;
+//        }
         Bitmap bitmap = Bitmap.createBitmap(diameter, diameter, source.getConfig());
 
         Canvas canvas = new Canvas(bitmap);
