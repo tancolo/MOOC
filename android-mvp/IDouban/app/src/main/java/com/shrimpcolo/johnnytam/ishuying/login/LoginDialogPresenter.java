@@ -3,9 +3,11 @@ package com.shrimpcolo.johnnytam.ishuying.login;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.shrimpcolo.johnnytam.ishuying.IShuYingApplication;
 import com.shrimpcolo.johnnytam.ishuying.api.IDoubanService;
 import com.shrimpcolo.johnnytam.ishuying.beans.PlatformWrapper;
 import com.shrimpcolo.johnnytam.ishuying.beans.UserInfo;
+import com.shrimpcolo.johnnytam.ishuying.utils.FileUtils;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,13 +31,17 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
 
     private IDoubanService loginService;
 
+    private LoginContract.Presenter presenter;
+
     private CompositeSubscription compositeSubscription;
 
     public LoginDialogPresenter(@NonNull IDoubanService loginService,
-                                @NonNull LoginContract.LoginDialogView loginDialog) {
+                                @NonNull LoginContract.LoginDialogView loginDialog,
+                                @NonNull LoginContract.Presenter presenter) {
 
         this.loginService = checkNotNull(loginService, "IDoubanService cannot be null!");
         this.loginDialogView = checkNotNull(loginDialog, "login Dialog view cannot be null!");
+        this.presenter = checkNotNull(presenter, "presenter == null");
 
         this.loginDialogView.setPresenter(this);
 
@@ -68,11 +74,11 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
                     @Override
                     public void onNext(PlatformWrapper platformWrapper) {
                         if (Platform.ACTION_USER_INFOR == platformWrapper.getAction()) {
-                            Log.e(TAG, "====> onNext " + platformWrapper.getPlatform().getName() + ", Thread ID: " + Thread.currentThread().getId());
+                            //Log.e(TAG, "====> onNext " + platformWrapper.getPlatform().getName() + ", Thread ID: " + Thread.currentThread().getId());
                             Log.e(TAG, "====> onNext hashmap: " + platformWrapper.getHashMap());
 
                             if (platformWrapper.getHashMap() != null) {
-                                debugUserInfo(platformWrapper.getPlatform(), platformWrapper.getHashMap());
+                                processLoginInfo(platformWrapper);
                             }
                         }
                     }
@@ -104,9 +110,11 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
 
     }
 
-    private void debugUserInfo(Platform platform, HashMap<String, Object> hashMap) {
+    private void processLoginInfo(PlatformWrapper platformWrapper) {
+        Platform platform = platformWrapper.getPlatform();
+        HashMap<String, Object> hashMap = platformWrapper.getHashMap();
+
         //解析各种平台的数据，统一放到UserInfo中使用
-        Log.e(TAG, "====> " + platform);
         UserInfo userInfo = new UserInfo();
 
         Iterator ite = hashMap.entrySet().iterator();
@@ -114,7 +122,7 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
             Map.Entry entry = (Map.Entry) ite.next();
             Object key = entry.getKey();
             Object value = entry.getValue();
-            //Log.e(HomeActivity.TAG, " " + key + "： " + value);
+            //Log.e(TAG, " " + key + "： " + value);
 
             if (QQ.NAME.equals(platform.getName())) {
                 if (key.equals("nickname")) {
@@ -146,6 +154,17 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
         //print QQ info
         Log.e(TAG, userInfo.toString());
 
+        Log.e(TAG, "getInstance() " + IShuYingApplication.getInstance());
+        IShuYingApplication.getInstance().setUser(userInfo);
+
+        FileUtils.saveAutoLogin(true, 1);
+
+        presenter.updateLoginInfo(userInfo);
+
+        //send intent to HomeActivity
+//        Intent intent = new Intent();
+//        intent.putExtra("userInfo", userInfo);
+//        ((LoginDialogFragment)loginDialogView).getActivity().setResult(Activity.RESULT_OK, intent);
     }
 
 }

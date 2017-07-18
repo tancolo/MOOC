@@ -6,10 +6,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.ColorInt;
+import android.util.Log;
 
 import com.squareup.picasso.Transformation;
 
 public class CircleTransformation implements Transformation {
+
+    private static final String TAG = CircleTransformation.class.getSimpleName();
+
     private static final int DEFAULT_BORDER_WIDTH = 10;
     private static final int DEFAULT_BORDER_COLOR = Color.parseColor("#000000");
 
@@ -42,7 +46,15 @@ public class CircleTransformation implements Transformation {
         if (squareBitmap != source) {
             source.recycle();
         }
+        Log.e(TAG, "transform() source.getConfig = " + source.getConfig()
+        + "\n "
+        + Log.getStackTraceString(new Throwable()));
+
+        if (source.getConfig() == null) {
+            return null;
+        }
         Bitmap bitmap = Bitmap.createBitmap(diameter, diameter, source.getConfig());
+
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
         BitmapShader shader = new BitmapShader(squareBitmap, BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);

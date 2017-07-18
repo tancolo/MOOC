@@ -32,4 +32,13 @@ public final class ConstContent {
 
     public static final String FRAGMENT_LOGIN_DIALOG_TAG = "loginDialog";
 
+
+    public static final String APP_USER_INFO_FILE = "user_info.txt"; //账号信息
+
+    public static final int LOGIN_REQUEST_CODE = 1000;
+
+    public static final String INTENT_PARAM_IS_LOGIN = "isLogin";
+
+    public static final String ACTION_LOGIN_STATUS_CHANGED = "action.LOGIN.STATUS.CHANGED";
+
 }

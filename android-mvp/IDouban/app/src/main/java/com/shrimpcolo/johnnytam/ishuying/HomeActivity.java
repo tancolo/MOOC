@@ -1,6 +1,9 @@
 package com.shrimpcolo.johnnytam.ishuying;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -25,6 +28,7 @@ import com.shrimpcolo.johnnytam.ishuying.aboutme.AboutFragment;
 import com.shrimpcolo.johnnytam.ishuying.api.DoubanManager;
 import com.shrimpcolo.johnnytam.ishuying.base.BaseActivity;
 import com.shrimpcolo.johnnytam.ishuying.base.BaseViewPagerAdapter;
+import com.shrimpcolo.johnnytam.ishuying.beans.UserInfo;
 import com.shrimpcolo.johnnytam.ishuying.blogs.BlogContract;
 import com.shrimpcolo.johnnytam.ishuying.blogs.BlogFragment;
 import com.shrimpcolo.johnnytam.ishuying.blogs.BlogPresenter;
@@ -32,6 +36,8 @@ import com.shrimpcolo.johnnytam.ishuying.books.BooksContract;
 import com.shrimpcolo.johnnytam.ishuying.books.BooksFragment;
 import com.shrimpcolo.johnnytam.ishuying.books.BooksPresenter;
 import com.shrimpcolo.johnnytam.ishuying.login.LoginActivity;
+import com.shrimpcolo.johnnytam.ishuying.login.LoginListener;
+import com.shrimpcolo.johnnytam.ishuying.login.LoginListenerObservable;
 import com.shrimpcolo.johnnytam.ishuying.movies.MoviesContract;
 import com.shrimpcolo.johnnytam.ishuying.movies.MoviesFragment;
 import com.shrimpcolo.johnnytam.ishuying.movies.MoviesPresenter;
@@ -39,7 +45,13 @@ import com.shrimpcolo.johnnytam.ishuying.utils.CircleTransformation;
 import com.shrimpcolo.johnnytam.ishuying.utils.ConstContent;
 import com.squareup.picasso.Picasso;
 
-public class HomeActivity extends BaseActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+
+public class HomeActivity extends BaseActivity implements LoginListenerObservable {
 
     public static final String TAG = HomeActivity.class.getSimpleName();
 
@@ -51,9 +63,17 @@ public class HomeActivity extends BaseActivity {
 
     private LinearLayout mLinearLayout;
 
+    private ImageView mProfileView;
+
+    private TextView mProfileName;
+
+    private List<LoginListener> mLoginListenerList;
+
+    private LoginStateChangedLocalReceiver mLocalReceiver;
+
     @Override
     protected void initVariables() {
-
+        mLoginListenerList = new ArrayList<>();
     }
 
     @Override
@@ -75,6 +95,8 @@ public class HomeActivity extends BaseActivity {
         initTabLayout();
 
         initOthersFragment();
+
+        initLocalReceiver();
     }
 
     private void initFAB () {
@@ -162,6 +184,7 @@ public class HomeActivity extends BaseActivity {
                 case R.id.navigation_item_login:
                     Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
                     startActivity(intent);
+                    //startActivityForResult(intent, ConstContent.LOGIN_REQUEST_CODE);
 
                     break;
                 case R.id.navigation_item_logout:
@@ -182,8 +205,8 @@ public class HomeActivity extends BaseActivity {
 
     private void setupNavigationHeader() {
         View headView = mNavigationView.inflateHeaderView(R.layout.navigation_header);
-        ImageView profileView = (ImageView) headView.findViewById(R.id.img_profile_photo);
-        TextView profileName = (TextView) headView.findViewById(R.id.txt_profile_name);
+        mProfileView = (ImageView) headView.findViewById(R.id.img_profile_photo);
+        mProfileName = (TextView) headView.findViewById(R.id.txt_profile_name);
 
         int size = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_size);
         int width = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_border);
@@ -193,10 +216,11 @@ public class HomeActivity extends BaseActivity {
                 .load(R.mipmap.dayuhaitang)
                 .resize(size, size)
                 .transform(new CircleTransformation(width, color))
-                .into(profileView);
+                .placeholder(R.mipmap.ic_ishuying)
+                .into(mProfileView);
 
-        if (profileView != null) {
-            profileView.setOnClickListener(view -> {
+        if (mProfileView != null) {
+            mProfileView.setOnClickListener(view -> {
                 Log.e(TAG, "===> onClick...!");
                 mDrawerLayout.closeDrawers();
                 mNavigationView.getMenu().getItem(0).setChecked(true);
@@ -209,6 +233,7 @@ public class HomeActivity extends BaseActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         BlogFragment jianshuFragment = BlogFragment.newInstance();
         AboutFragment aboutFragment = AboutFragment.newInstance();
+        addListener(aboutFragment);//aboutFragment监听HomeActivity登录状态
 
         transaction.add(R.id.frame_container, jianshuFragment, ConstContent.MENU_BLOG);
         transaction.add(R.id.frame_container, aboutFragment, ConstContent.MENU_ABOUT);
@@ -257,6 +282,44 @@ public class HomeActivity extends BaseActivity {
         BooksPresenter booksPresenter = new BooksPresenter(DoubanManager.createDoubanService(), booksFragment);
     }
 
+    private void initLocalReceiver() {
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConstContent.ACTION_LOGIN_STATUS_CHANGED);
+        mLocalReceiver = new LoginStateChangedLocalReceiver();
+
+        mLocalBroadcastManager.registerReceiver(mLocalReceiver, filter);
+    }
+
+    @Override
+    public void addListener(LoginListener listener) {
+        mLoginListenerList.add(listener);
+    }
+
+    @Override
+    public void removeListener(LoginListener listener) {
+        mLoginListenerList.remove(listener);
+    }
+
+    @Override
+    public void onLoginSuccess() {
+
+        //update Navigation head view, photo & name
+        updateHeaderViewProfile();
+
+        //notify other listeners
+        Observable.from(mLoginListenerList)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(LoginListener::onLoginSuccess);
+    }
+
+    @Override
+    public void onLogoutSuccess() {
+        Observable.from(mLoginListenerList)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(LoginListener::onLogoutSuccess);
+    }
+
     static class HomePagerAdapter extends BaseViewPagerAdapter {
 
         public HomePagerAdapter(FragmentManager fm) {
@@ -290,5 +353,71 @@ public class HomeActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ConstContent.LOGIN_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+
+                UserInfo userInfo = (UserInfo) data.getSerializableExtra("userInfo");
+
+                Log.e(TAG, "url: " + userInfo.getUserIcon() + ",  name: " + userInfo.getUserName());
+
+                Picasso.with(this).load(userInfo.getUserIcon()).into(mProfileView);
+                mProfileName.setText(userInfo.getUserName());
+
+                //callback for about me
+                //iSetupProfile.setupProfile(userInfo);
+
+            }
+        }
+    }
+
+
+    class LoginStateChangedLocalReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Log.d(TAG, "acton = " + intent.getAction());
+
+            if (ConstContent.ACTION_LOGIN_STATUS_CHANGED.equals(intent.getAction())) {
+                boolean isLogin = intent.getBooleanExtra(ConstContent.INTENT_PARAM_IS_LOGIN, false);
+                Log.d(TAG, "isLogin = " + isLogin);
+
+                onLoginSuccess();
+            }
+
+        }
+    }
+
+    private void updateHeaderViewProfile() {
+
+        UserInfo userInfo = IShuYingApplication.getInstance().getUser();
+        //Log.d(TAG, "url: " + userInfo.getUserIcon() + ",  name: " + userInfo.getUserName());
+
+        int size = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_size);
+        int width = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_border);
+        int color = getResources().getColor(R.color.color_profile_photo_border);
+
+        Picasso.with(this)
+                .load(userInfo.getUserIcon())
+                .resize(size, size)
+                .transform(new CircleTransformation(width, color))
+                .placeholder(R.mipmap.ic_ishuying)
+                .into(mProfileView);
+
+        mProfileName.setText(userInfo.getUserName());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mLocalBroadcastManager.unregisterReceiver(mLocalReceiver);
     }
 }
