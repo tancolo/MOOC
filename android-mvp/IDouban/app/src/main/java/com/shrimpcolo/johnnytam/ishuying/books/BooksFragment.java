@@ -97,7 +97,7 @@ public class BooksFragment extends BaseFragment<Book> implements BooksContract.V
         swipeRefreshLayout.setScrollUpChild(mRecyclerView);
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            Log.e(HomeActivity.TAG, "\n\n onRefresh loadRefreshedBooks...");
+            Log.i(HomeActivity.TAG, "\n\n onRefresh loadRefreshedBooks...");
             mPresenter.loadRefreshedBooks(true);
         });
     }
@@ -109,7 +109,7 @@ public class BooksFragment extends BaseFragment<Book> implements BooksContract.V
 
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                Log.e(TAG, "page: " + page + ", totalItemsCount: " + totalItemsCount);
+                Log.i(TAG, "page: " + page + ", totalItemsCount: " + totalItemsCount);
                 mPresenter.loadMoreBooks(totalItemsCount);
             }
         };
@@ -154,7 +154,7 @@ public class BooksFragment extends BaseFragment<Book> implements BooksContract.V
 
     @Override
     public void showNoLoadedMoreBooks() {
-        //Log.e(TAG, "===> LoadMore Empty books thread id: " + Thread.currentThread().getId());
+        //Log.i(TAG, "===> LoadMore Empty books thread id: " + Thread.currentThread().getId());
         Toast.makeText(getActivity().getApplicationContext(),
                 getActivity().getString(R.string.content_no_loadmore), Toast.LENGTH_LONG).show();
     }
@@ -163,12 +163,12 @@ public class BooksFragment extends BaseFragment<Book> implements BooksContract.V
     public void setRefreshedIndicator(boolean active) {
         if(getView() == null) return;
 
-        Log.e(HomeActivity.TAG, TAG + "=> loading indicator: " + active);
+        Log.i(HomeActivity.TAG, TAG + "=> loading indicator: " + active);
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)getView().findViewById(R.id.book_refresh_layout);
 
         // Make sure setRefreshing() is called after the layout is done with everything else.
         swipeRefreshLayout.post(() -> {
-            Log.e(HomeActivity.TAG, "swipeRefreshLayout run() active: " + active);
+            Log.i(HomeActivity.TAG, "swipeRefreshLayout run() active: " + active);
             swipeRefreshLayout.setRefreshing(active);
         });
     }
@@ -230,7 +230,7 @@ public class BooksFragment extends BaseFragment<Book> implements BooksContract.V
 
         @Override
         public void onClick(View v) {
-            Log.e(HomeActivity.TAG, "==>Book onClick....Item");
+            Log.i(HomeActivity.TAG, "==>Book onClick....Item");
 
             if (itemContent == null) return;
             if (itemView == null) return;
@@ -256,6 +256,6 @@ public class BooksFragment extends BaseFragment<Book> implements BooksContract.V
 
         mAdapterData.clear();
         mPresenter.unSubscribe();
-        Log.e(HomeActivity.TAG, TAG + "=> onDestroy()!!!");
+        Log.i(HomeActivity.TAG, TAG + "=> onDestroy()!!!");
     }
 }

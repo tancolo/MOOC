@@ -41,7 +41,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
         mIDuobanService = checkNotNull(moviesService, "IDoubanServie cannot be null!");
         mMoviesView = checkNotNull(moviesView, "moviesView cannot be null!");
 
-        Log.d(HomeActivity.TAG, TAG + ", MoviesPresenter: create!");
+        Log.i(HomeActivity.TAG, TAG + ", MoviesPresenter: create!");
         mMoviesView.setPresenter(this);
 
         mCompositeSubscription = new CompositeSubscription();
@@ -62,7 +62,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
     @Override
     public void loadMoreMovies(int movieStartIndex) {
 
-        Log.e(HomeActivity.TAG, "movieStartIndex: " + movieStartIndex + ", mMovieTotal: " + mMovieTotal);
+        Log.i(HomeActivity.TAG, "movieStartIndex: " + movieStartIndex + ", mMovieTotal: " + mMovieTotal);
         if(movieStartIndex >= mMovieTotal) {
             processLoadMoreEmptyMovies();
             return;
@@ -74,12 +74,12 @@ public class MoviesPresenter implements MoviesContract.Presenter {
                 .subscribe(new Subscriber<HotMoviesInfo>() {
                     @Override
                     public void onCompleted() {
-                        Log.d(HomeActivity.TAG, "===> onCompleted 22: Thread.Id = " + Thread.currentThread().getId());
+                        Log.i(HomeActivity.TAG, "===> onCompleted 22: Thread.Id = " + Thread.currentThread().getId());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(HomeActivity.TAG, "===> onError 22: Thread.Id = "
+                        Log.i(HomeActivity.TAG, "===> onError 22: Thread.Id = "
                                 + Thread.currentThread().getId() + ", Error: " + e.getMessage());
 
                         processLoadMoreEmptyMovies();
@@ -87,10 +87,10 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
                     @Override
                     public void onNext(HotMoviesInfo hotMoviesInfo) {
-                        Log.d(HomeActivity.TAG, "===> onNext 22: Thread.Id = " + Thread.currentThread().getId());
+                        Log.i(HomeActivity.TAG, "===> onNext 22: Thread.Id = " + Thread.currentThread().getId());
                         List<Movie> moreMoviesList = hotMoviesInfo.getMovies();
                         //debug
-                        Log.e(HomeActivity.TAG, "===> hotMoviesInfo, size = " + moreMoviesList.size());
+                        Log.i(HomeActivity.TAG, "===> hotMoviesInfo, size = " + moreMoviesList.size());
 
                         processLoadMoreMovies(moreMoviesList);
                     }
@@ -100,13 +100,13 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
     @Override
     public void cancelRetrofitRequest() {
-        Log.d(HomeActivity.TAG, TAG + "=> cancelRetrofitRequest() isCanceled = " + mMoviesRetrofitCallback.isCanceled());
+        Log.i(HomeActivity.TAG, TAG + "=> cancelRetrofitRequest() isCanceled = " + mMoviesRetrofitCallback.isCanceled());
         if(mMoviesRetrofitCallback != null && !mMoviesRetrofitCallback.isCanceled()) mMoviesRetrofitCallback.cancel();
     }
 
     @Override
     public void unSubscribe() {
-        Log.d(HomeActivity.TAG, TAG + "=> unSubscribe all subscribe");
+        Log.i(HomeActivity.TAG, TAG + "=> unSubscribe all subscribe");
         if (mCompositeSubscription != null) {
             mCompositeSubscription.unsubscribe();
         }
@@ -122,7 +122,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
             mCompositeSubscription.add(mIDuobanService.searchHotMoviesWithRxJava(0)
                     .subscribeOn(Schedulers.io())
                     .doOnSubscribe(() -> {
-                        Log.e(TAG, "doOnSubscribe");
+                        Log.i(TAG, "doOnSubscribe");
                         if(showLoadingUI){
                             //MoviesFragment需要显示Loading 界面
                             mMoviesView.setRefreshedIndicator(true);
@@ -133,12 +133,12 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
                         @Override
                         public void onStart() {
-                            Log.e(TAG, "onStart-> mSubscription: " + mSubscription);
+                            Log.i(TAG, "onStart-> mSubscription: " + mSubscription);
                         }
 
                         @Override
                         public void onCompleted() {
-                            Log.d(HomeActivity.TAG, "===> onCompleted 11: Thread.Id = " + Thread.currentThread().getId());
+                            Log.i(HomeActivity.TAG, "===> onCompleted 11: Thread.Id = " + Thread.currentThread().getId());
                             //获取数据成功，Loading UI消失
                             if(showLoadingUI) {
                                 mMoviesView.setRefreshedIndicator(false);
@@ -147,7 +147,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.d(HomeActivity.TAG, "===> onError 11 : Thread.Id = "
+                            Log.e(HomeActivity.TAG, "===> onError 11 : Thread.Id = "
                                     + Thread.currentThread().getId() + ", Error: " + e.getMessage());
 
                             //获取数据成功，Loading UI消失
@@ -159,13 +159,13 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
                         @Override
                         public void onNext(HotMoviesInfo hotMoviesInfo) {
-                            Log.d(HomeActivity.TAG, "===> onNext 11: Thread.Id = " + Thread.currentThread().getId());
+                            Log.i(HomeActivity.TAG, "===> onNext 11: Thread.Id = " + Thread.currentThread().getId());
                             List<Movie> moviesList = hotMoviesInfo.getMovies();
 
                             mMovieTotal = hotMoviesInfo.getTotal();
 
                             //debug
-                            Log.e(HomeActivity.TAG, "===> hotMoviesInfo, size = " + moviesList.size()
+                            Log.i(HomeActivity.TAG, "===> hotMoviesInfo, size = " + moviesList.size()
                                     + " showLoadingUI: " + showLoadingUI + ", total = " + mMovieTotal);
 
                             processMovies(moviesList);

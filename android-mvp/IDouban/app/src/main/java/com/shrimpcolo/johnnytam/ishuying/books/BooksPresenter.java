@@ -58,12 +58,12 @@ public class BooksPresenter implements BooksContract.Presenter{
                 .subscribe(new Subscriber<BooksInfo>() {
                     @Override
                     public void onCompleted() {
-                        Log.d(TAG, "===> Load More Book: onCompleted");
+                        Log.i(TAG, "===> Load More Book: onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "===> onError: Thread.Id = "
+                        Log.e(TAG, "===> onError: Thread.Id = "
                                 + Thread.currentThread().getId() + ", Error: " + e.getMessage());
 
                         processLoadMoreEmptyBooks();
@@ -73,7 +73,7 @@ public class BooksPresenter implements BooksContract.Presenter{
                     public void onNext(BooksInfo booksInfo) {
                         List<Book> loadMoreList = booksInfo.getBooks();
                         //debug
-                        Log.d(TAG, "===> Load More Book: onNext, size = " + loadMoreList.size());
+                        Log.i(TAG, "===> Load More Book: onNext, size = " + loadMoreList.size());
 
                         processLoadMoreBooks(loadMoreList);
                     }
@@ -83,7 +83,7 @@ public class BooksPresenter implements BooksContract.Presenter{
 
     @Override
     public void cancelRetrofitRequest() {
-        Log.e(HomeActivity.TAG, TAG + "=> cancelRetrofitRequest() isCanceled = "
+        Log.i(HomeActivity.TAG, TAG + "=> cancelRetrofitRequest() isCanceled = "
                 + mBooksRetrofitCallback.isCanceled());
 
         if(!mBooksRetrofitCallback.isCanceled()) mBooksRetrofitCallback.cancel();
@@ -91,7 +91,7 @@ public class BooksPresenter implements BooksContract.Presenter{
 
     @Override
     public void unSubscribe() {
-        Log.d(HomeActivity.TAG, TAG + "=> unSubscribe all subscribe");
+        Log.i(HomeActivity.TAG, TAG + "=> unSubscribe all subscribe");
         if (mCompositeSubscription != null) {
             mCompositeSubscription.unsubscribe();
         }
@@ -115,7 +115,7 @@ public class BooksPresenter implements BooksContract.Presenter{
                     .subscribe(new Subscriber<BooksInfo>() {
                         @Override
                         public void onCompleted() {
-                            Log.d(HomeActivity.TAG, "===> Search Book: onNext " + ", showLoadingUI: " + showLoadingUI);
+                            Log.i(HomeActivity.TAG, "===> Search Book: onNext " + ", showLoadingUI: " + showLoadingUI);
                             //获取数据成功，Loading UI消失
                             if(showLoadingUI) {
                                 mBookView.setRefreshedIndicator(false);
@@ -124,7 +124,7 @@ public class BooksPresenter implements BooksContract.Presenter{
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.d(HomeActivity.TAG, "===> search Book: onError: Thread.Id = "
+                            Log.e(TAG, "===> search Book: onError: Thread.Id = "
                                     + Thread.currentThread().getId() + ", Error: " + e.getMessage());
 
                             //获取数据成功，Loading UI消失
@@ -138,7 +138,7 @@ public class BooksPresenter implements BooksContract.Presenter{
                         public void onNext(BooksInfo booksInfo) {
                             List<Book> booksList = booksInfo.getBooks();
                             //debug
-                            Log.d(HomeActivity.TAG, "===> Search Book: onNext, size = " + booksList.size());
+                            Log.i(HomeActivity.TAG, "===> Search Book: onNext, size = " + booksList.size());
 
                             processBooks(booksList);
                         }
@@ -163,7 +163,7 @@ public class BooksPresenter implements BooksContract.Presenter{
     }
 
     private void processLoadMoreEmptyBooks() {
-        Log.e(TAG, "LoadMore Empty books ");
+        Log.i(TAG, "LoadMore Empty books ");
         mBookView.showNoLoadedMoreBooks();
     }
 

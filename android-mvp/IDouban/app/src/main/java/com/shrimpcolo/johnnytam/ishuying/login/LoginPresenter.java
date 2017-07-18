@@ -46,7 +46,13 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void loadLoginData() {
-        Log.e(TAG, "===> loadLoginData()");
+        UserInfo userInfo = IShuYingApplication.getInstance().getUser();
+        if (userInfo != null) {
+            loginView.showLoginSuccessView(true);
+            loginView.showLoginView(false);
+            loginView.setupPhoto(userInfo.getUserIcon());
+            loginView.setupName(userInfo.getUserName());
+        }
     }
 
     @Override
@@ -61,6 +67,10 @@ public class LoginPresenter implements LoginContract.Presenter {
         }
     }
 
+    /**
+     * LoginDialogPresenter调用该方法
+     * @param userInfo
+     */
     @Override
     public void updateLoginInfo(UserInfo userInfo) {
 

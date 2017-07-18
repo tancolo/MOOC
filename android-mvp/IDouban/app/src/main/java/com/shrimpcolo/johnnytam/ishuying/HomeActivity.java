@@ -43,13 +43,19 @@ import com.shrimpcolo.johnnytam.ishuying.movies.MoviesFragment;
 import com.shrimpcolo.johnnytam.ishuying.movies.MoviesPresenter;
 import com.shrimpcolo.johnnytam.ishuying.utils.CircleTransformation;
 import com.shrimpcolo.johnnytam.ishuying.utils.ConstContent;
+import com.shrimpcolo.johnnytam.ishuying.utils.FileUtils;
+import com.shrimpcolo.johnnytam.ishuying.utils.Preferences;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class HomeActivity extends BaseActivity implements LoginListenerObservable {
 
@@ -74,6 +80,81 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
     @Override
     protected void initVariables() {
         mLoginListenerList = new ArrayList<>();
+
+        execAutoLoginProcess();
+    }
+
+    private void execAutoLoginProcess() {
+        Log.e(TAG, "===> initVariables start ---- ");
+        //获取缓存，并将数据保存到全局UserInfo中，用于自动登录
+        Observable.just(IShuYingApplication.getInstance().getSharedPreferences().getBoolean(Preferences.PREFERENCE_AUTO_LOGIN, false))
+                .filter(autoLogin -> autoLogin)
+                .map(autoLogin -> FileUtils.recoverySerializableUser())
+                .filter(userInfo -> userInfo != null)
+                .doOnNext(userInfo -> IShuYingApplication.getInstance().setUser(userInfo))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(userInfo -> onLoginSuccess());//直接调用该方法 去通知所有相关类更改UI
+
+        Log.e(TAG, "===> initVariables end ---- ");
+    }
+
+    /**
+     * 用于测试rxjava的各种方法流程, 内容同方法 execAutoLoginProcess()
+     */
+    private void just4debugRxJavaProcess() {
+        Log.e(TAG, "===> initVariables start ---- ");
+        //获取缓存，并将数据保存到全局UserInfo中，用于自动登录
+        Observable.just(IShuYingApplication.getInstance().getSharedPreferences().getBoolean(Preferences.PREFERENCE_AUTO_LOGIN, false))
+                .filter(new Func1<Boolean, Boolean>() {
+                    @Override
+                    public Boolean call(Boolean autoLogin) {
+                        Log.d(TAG, "filter: autoLogin = " + autoLogin);
+                        return autoLogin;
+                    }
+                })
+                .map(new Func1<Boolean, UserInfo>() {
+                    @Override
+                    public UserInfo call(Boolean autoLogin) {
+                        Log.d(TAG, "map: autoLogin = " + autoLogin);
+                        return FileUtils.recoverySerializableUser();
+                    }
+                })
+                .filter(new Func1<UserInfo, Boolean>() {
+                    @Override
+                    public Boolean call(UserInfo userInfo) {
+                        Log.d(TAG, "filter2 : userInfo = " + userInfo);
+                        return userInfo != null;
+                    }
+                })
+                .doOnNext(new Action1<UserInfo>() {
+                    @Override
+                    public void call(UserInfo userInfo) {
+                        IShuYingApplication.getInstance().setUser(userInfo);
+                        Log.d(TAG, "doOnNext: setUser...");
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<UserInfo>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.d(TAG, "onCompleted: ...");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError: ...");
+                    }
+
+                    @Override
+                    public void onNext(UserInfo userInfo) {
+                        Log.d(TAG, "onNext: ...");
+                        onLoginSuccess();
+                    }
+                });
+
+        Log.e(TAG, "===> initVariables end ---- ");
     }
 
     @Override
@@ -99,7 +180,22 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         initLocalReceiver();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Log.e(TAG, "===> onStart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.e(TAG, "===> onResume");
+    }
+
     private void initFAB () {
+        Log.e(TAG, "===> initFAB");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -110,6 +206,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
     }
 
     private void initDrawerLayout() {
+        Log.e(TAG, "===> initDrawerLayout");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle drawerToggle =
@@ -119,6 +216,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
     }
 
     private void initAndSetupNavigation() {
+        Log.e(TAG, "===> initAndSetupNavigation");
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
         mLinearLayout = (LinearLayout) findViewById(R.id.tab_container);
 
@@ -208,19 +306,21 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
     }
 
     private void setupNavigationHeader() {
+        Log.e(TAG, "===> setupNavigationHeader");
         View headView = mNavigationView.inflateHeaderView(R.layout.navigation_header);
         mProfileView = (ImageView) headView.findViewById(R.id.img_profile_photo);
         mProfileName = (TextView) headView.findViewById(R.id.txt_profile_name);
 
-        int size = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_size);
-        int width = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_border);
-        int color = getResources().getColor(R.color.color_profile_photo_border);
+//        int size = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_size);
+//        int width = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_border);
+//        int color = getResources().getColor(R.color.color_profile_photo_border);
+//
+//        Picasso.with(this)
+//                .load(R.mipmap.dayuhaitang)
+//                .resize(size, size)
+//                .transform(new CircleTransformation(width, color))
+//                .into(mProfileView);
 
-        Picasso.with(this)
-                .load(R.mipmap.dayuhaitang)
-                .resize(size, size)
-                .transform(new CircleTransformation(width, color))
-                .into(mProfileView);
 
         if (mProfileView != null) {
             mProfileView.setOnClickListener(view -> {
@@ -229,9 +329,12 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
                 mNavigationView.getMenu().getItem(0).setChecked(true);
             });
         }
+
+        updateHeaderViewProfile();
     }
 
     private void initOthersFragment() {
+        Log.e(TAG, "===> initOthersFragment");
         //init blog fragment
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         BlogFragment jianshuFragment = BlogFragment.newInstance();
@@ -246,11 +349,12 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
 
     }
     private void createOtherPresenter(BlogContract.View blogFragment) {
-        Log.d(TAG, "createOtherPresenter");
+        Log.d(TAG, "===> createOtherPresenter");
         new BlogPresenter(DoubanManager.createDoubanService(), blogFragment);
     }
 
     private void initTabLayout() {
+        Log.d(TAG, "===> initTabLayout");
         TabLayout tabLayout = (TabLayout) findViewById(R.id.douban_sliding_tabs);
 
         if(tabLayout != null) {
@@ -261,6 +365,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
     }
 
     private void setupViewPager(ViewPager viewPager) {
+        Log.d(TAG, "===> setupViewPager");
         HomePagerAdapter pagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
 
         MoviesFragment moviesFragment = MoviesFragment.newInstance();
@@ -277,8 +382,8 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
     }
 
     private void createPresenter(MoviesContract.View moviesFragment, BooksContract.View booksFragment) {
-        Log.e(TAG, " createPresenter, fragmentView = " + moviesFragment);
-        Log.e(TAG, " createPresenter, booksFragment = " + booksFragment);
+        Log.i(TAG, " createPresenter, fragmentView = " + moviesFragment);
+        Log.i(TAG, " createPresenter, booksFragment = " + booksFragment);
 
         //Create the movies presenter
         MoviesPresenter moviesPresenter = new MoviesPresenter(DoubanManager.createDoubanService(), moviesFragment);
@@ -286,7 +391,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
     }
 
     private void initLocalReceiver() {
-
+        Log.d(TAG, "===> initLocalReceiver");
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConstContent.ACTION_LOGIN_STATUS_CHANGED);
         mLocalReceiver = new LoginStateChangedLocalReceiver();
@@ -327,7 +432,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
                 .subscribe(LoginListener::onLogoutSuccess);
     }
 
-    static class HomePagerAdapter extends BaseViewPagerAdapter {
+    private static class HomePagerAdapter extends BaseViewPagerAdapter {
 
         public HomePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -383,10 +488,14 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         }
     }
 
+    /**
+     * 通过UserInfo判断是否是登录状态，做不同UI显示
+     */
     private void updateHeaderViewProfile() {
 
+        //userInfo maybe null, that'ok
         UserInfo userInfo = IShuYingApplication.getInstance().getUser();
-        //Log.d(TAG, "url: " + userInfo.getUserIcon() + ",  name: " + userInfo.getUserName());
+        Log.e(TAG, "===> userInfo : " + userInfo);
 
         int size = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_size);
         int width = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_border);

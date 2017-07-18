@@ -50,19 +50,19 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
     }
 
     public static MoviesFragment newInstance(){
-        Log.e(HomeActivity.TAG, "MoviesFragment newInstance!");
+        Log.i(HomeActivity.TAG, "MoviesFragment newInstance!");
         return new MoviesFragment();
     }
 
     @Override
     protected void initVariables() {
-        Log.e(HomeActivity.TAG,  TAG + " onCreate() -> initVariables");
+        Log.i(HomeActivity.TAG,  TAG + " onCreate() -> initVariables");
         mAdapterData = new ArrayList<>();
     }
 
     @Override
     protected void initRecycleViewAdapter() {
-        Log.e(HomeActivity.TAG,  TAG + " onCreate() -> initRecycleViewAdapter");
+        Log.i(HomeActivity.TAG,  TAG + " onCreate() -> initRecycleViewAdapter");
         //create movie adapter
         mAdapter = new BaseRecycleViewAdapter<>(new ArrayList<>(0),
                 R.layout.recyclerview_movies_item,
@@ -72,7 +72,7 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
 
     @Override
     protected void initRecycleView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.e(HomeActivity.TAG,  TAG + " onCreateView() -> initRecycleView");
+        Log.i(HomeActivity.TAG,  TAG + " onCreateView() -> initRecycleView");
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_movies, container, false);
         mSwipeToLoadLayout = (SwipeToLoadLayout) mView.findViewById(R.id.swipeToLoadLayout);
@@ -88,7 +88,7 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
 
     @Override
     protected void initSwipeRefreshLayout() {
-        Log.e(HomeActivity.TAG,  TAG + " onCreateView() -> initSwipeRefreshLayout");
+        Log.i(HomeActivity.TAG,  TAG + " onCreateView() -> initSwipeRefreshLayout");
         mSwipeToLoadLayout.setOnRefreshListener(() -> {
             Log.e(HomeActivity.TAG, TAG + "=> onRefresh!");
             mPresenter.loadRefreshedMovies(true);
@@ -198,7 +198,7 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
 
         @Override
         public void onClick(View v) {
-            Log.e(HomeActivity.TAG, "==> onClick....Item");
+            Log.d(HomeActivity.TAG, "==> onClick....Item");
 
             if (itemContent == null || itemView == null) return;
 
@@ -246,7 +246,7 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
         mAdapterData.clear();
         //mPresenter.cancelRetrofitRequest();
         mPresenter.unSubscribe();
-        Log.e(HomeActivity.TAG, TAG + "=> onDestroy()!!!");
+        Log.i(HomeActivity.TAG, TAG + "=> onDestroy()!!!");
     }
 
 }
