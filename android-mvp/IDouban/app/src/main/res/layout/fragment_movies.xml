@@ -12,6 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
         android:text="@string/hot_movies"
         android:textColor="@color/primary_text"
         android:textSize="20sp" />

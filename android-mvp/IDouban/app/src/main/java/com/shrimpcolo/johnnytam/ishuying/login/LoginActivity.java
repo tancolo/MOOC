@@ -21,7 +21,7 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     protected void initVariables() {
-
+        Log.i(TAG, "task id: " + getTaskId());
     }
 
     @Override

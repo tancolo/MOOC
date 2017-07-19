@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -159,7 +160,7 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView {
         LoginActivity loginActivity = (LoginActivity) getActivity();
         Log.d(TAG, "loginStatusChanged send broadcast to HomeActivity: isLogin = " + isLogin);
         if (loginActivity != null) {
-            loginActivity.getLocalBroadcastManager().sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(loginActivity).sendBroadcast(intent);
         }
     }
 

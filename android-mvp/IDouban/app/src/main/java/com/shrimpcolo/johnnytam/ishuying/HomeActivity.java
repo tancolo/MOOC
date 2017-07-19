@@ -1,7 +1,5 @@
 package com.shrimpcolo.johnnytam.ishuying;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -24,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.cantrowitz.rxbroadcast.RxBroadcast;
 import com.shrimpcolo.johnnytam.ishuying.aboutme.AboutFragment;
 import com.shrimpcolo.johnnytam.ishuying.api.DoubanManager;
 import com.shrimpcolo.johnnytam.ishuying.base.BaseActivity;
@@ -52,6 +51,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -75,12 +75,13 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
 
     private List<LoginListener> mLoginListenerList;
 
-    private LoginStateChangedLocalReceiver mLocalReceiver;
+    private Subscription mSubscription;
 
     @Override
     protected void initVariables() {
         mLoginListenerList = new ArrayList<>();
-
+        //debug activity task
+        Log.i(TAG, "task id: " +  getTaskId());
         execAutoLoginProcess();
     }
 
@@ -222,6 +223,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
 
         mNavigationView.setNavigationItemSelectedListener(item -> {
 
+            boolean isClickLoginItem = false;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             Log.e(TAG, "===> getFragments.size = " + getSupportFragmentManager().getFragments().size());
 
@@ -281,9 +283,10 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
                     break;
 
                 case R.id.navigation_item_login:
-                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                    isClickLoginItem = true;
+                    //Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
                     //intent.putExtra(ConstContent.INTENT_PARAM_LOGIN_LOGOUT_TYPE, ConstContent.INTENT_PARAM_TYPE_LOGIN);
-                    startActivity(intent);
+                    //startActivity(intent);
                     //startActivityForResult(intent, ConstContent.LOGIN_REQUEST_CODE);
 
                     break;
@@ -296,9 +299,15 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
                     break;
             }
 
-            transaction.commit();
             item.setCheckable(true);
+            transaction.commit();
             mDrawerLayout.closeDrawers();
+
+            if (isClickLoginItem) {
+                isClickLoginItem = false;
+                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
 
             return true;
         });
@@ -311,22 +320,28 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         mProfileView = (ImageView) headView.findViewById(R.id.img_profile_photo);
         mProfileName = (TextView) headView.findViewById(R.id.txt_profile_name);
 
-//        int size = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_size);
-//        int width = getResources().getDimensionPixelOffset(R.dimen.profile_avatar_border);
-//        int color = getResources().getColor(R.color.color_profile_photo_border);
-//
-//        Picasso.with(this)
-//                .load(R.mipmap.dayuhaitang)
-//                .resize(size, size)
-//                .transform(new CircleTransformation(width, color))
-//                .into(mProfileView);
-
-
         if (mProfileView != null) {
             mProfileView.setOnClickListener(view -> {
                 Log.e(TAG, "===> onClick...!");
+
+                //隐藏Movie， Book Fragments
+                if (mLinearLayout.getVisibility() == View.VISIBLE) {
+                    mLinearLayout.setVisibility(View.GONE);
+                }
+
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                getSupportFragmentManager().getFragments().forEach(fragment -> {
+                    if (ConstContent.MENU_ABOUT.equals(fragment.getTag())) {
+                        transaction.show(fragment);
+                    } else {
+                        transaction.hide(fragment);
+                    }
+
+                });
+
+                transaction.commit();
                 mDrawerLayout.closeDrawers();
-                mNavigationView.getMenu().getItem(0).setChecked(true);
+                mNavigationView.getMenu().getItem(2).setChecked(true);
             });
         }
 
@@ -394,9 +409,19 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         Log.d(TAG, "===> initLocalReceiver");
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConstContent.ACTION_LOGIN_STATUS_CHANGED);
-        mLocalReceiver = new LoginStateChangedLocalReceiver();
 
-        mLocalBroadcastManager.registerReceiver(mLocalReceiver, filter);
+        mSubscription = RxBroadcast.fromLocalBroadcast(this, filter)
+                .filter(intent -> ConstContent.ACTION_LOGIN_STATUS_CHANGED.equals(intent.getAction()))
+                .map(intent -> intent.getBooleanExtra(ConstContent.INTENT_PARAM_IS_LOGIN, false))
+                .subscribe(isLogin -> {
+                    Log.e(TAG, "isLogin； " + isLogin);
+                    if (isLogin) {
+                        onLoginSuccess();
+                    }else {
+                        onLogoutSuccess();
+                    }
+                });
+
     }
 
     @Override
@@ -467,27 +492,6 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         return super.onOptionsItemSelected(item);
     }
 
-    class LoginStateChangedLocalReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            Log.d(TAG, "acton = " + intent.getAction());
-
-            if (ConstContent.ACTION_LOGIN_STATUS_CHANGED.equals(intent.getAction())) {
-                boolean isLogin = intent.getBooleanExtra(ConstContent.INTENT_PARAM_IS_LOGIN, false);
-                Log.d(TAG, "isLogin = " + isLogin);
-
-                if (isLogin) {
-                    onLoginSuccess();
-                } else {
-                    onLogoutSuccess();
-                }
-            }
-
-        }
-    }
-
     /**
      * 通过UserInfo判断是否是登录状态，做不同UI显示
      */
@@ -527,6 +531,9 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
     protected void onDestroy() {
         super.onDestroy();
 
-        mLocalBroadcastManager.unregisterReceiver(mLocalReceiver);
+        Log.d(TAG, "===> onDestroy: isUnsubscribed -> " + mSubscription.isUnsubscribed());
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
     }
 }
