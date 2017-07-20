@@ -9,6 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.melnykov.fab.FloatingActionButton;
+import com.shrimpcolo.johnnytam.ishuying.HomeActivity;
+import com.shrimpcolo.johnnytam.ishuying.R;
+
 import java.util.List;
 
 
@@ -27,6 +31,8 @@ public abstract class BaseFragment<T> extends Fragment {
     protected View mView;
 
     protected LinearLayoutManager mLayoutManager;
+
+    protected FloatingActionButton mFab;
 
 
     public BaseFragment() {
@@ -58,7 +64,15 @@ public abstract class BaseFragment<T> extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initFab();
         startPresenter();
+    }
+
+    private void initFab() {
+        HomeActivity homeActivity = (HomeActivity)getActivity();
+        if (homeActivity != null ) {
+            mFab = (FloatingActionButton) homeActivity.findViewById(R.id.fab);
+        }
     }
 
     protected abstract void initVariables();
@@ -72,4 +86,5 @@ public abstract class BaseFragment<T> extends Fragment {
     protected abstract void initEndlessScrollListener();
 
     protected abstract void startPresenter();
+
 }

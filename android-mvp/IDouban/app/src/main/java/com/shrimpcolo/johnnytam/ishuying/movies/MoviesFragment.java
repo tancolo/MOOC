@@ -114,18 +114,15 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        if(mPresenter != null) {
-            mPresenter.start();
-        }
-
+    public void setPresenter(MoviesContract.Presenter presenter) {
+        mPresenter = presenter;
     }
 
     @Override
-    public void setPresenter(MoviesContract.Presenter presenter) {
-        mPresenter = presenter;
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mFab.attachToRecyclerView(mRecyclerView);
     }
 
     @Override
