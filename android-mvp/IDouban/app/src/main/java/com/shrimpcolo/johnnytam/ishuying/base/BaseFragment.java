@@ -28,6 +28,8 @@ public abstract class BaseFragment<T> extends Fragment {
 
     protected LinearLayoutManager mLayoutManager;
 
+//    protected FloatingActionButton mFab;
+
 
     public BaseFragment() {
         // Required empty public constructor
@@ -58,7 +60,15 @@ public abstract class BaseFragment<T> extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //initFab();
         startPresenter();
+    }
+
+    private void initFab() {//第三方FAB，已经不用
+//        HomeActivity homeActivity = (HomeActivity)getActivity();
+//        if (homeActivity != null ) {
+//            mFab = (FloatingActionButton) homeActivity.findViewById(R.id.fab);
+//        }
     }
 
     protected abstract void initVariables();
@@ -72,4 +82,5 @@ public abstract class BaseFragment<T> extends Fragment {
     protected abstract void initEndlessScrollListener();
 
     protected abstract void startPresenter();
+
 }

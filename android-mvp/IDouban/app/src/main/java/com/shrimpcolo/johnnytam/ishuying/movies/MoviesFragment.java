@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
@@ -114,19 +113,10 @@ public class MoviesFragment extends BaseFragment<Movie> implements MoviesContrac
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        if(mPresenter != null) {
-            mPresenter.start();
-        }
-
-    }
-
-    @Override
     public void setPresenter(MoviesContract.Presenter presenter) {
         mPresenter = presenter;
     }
+
 
     @Override
     public void showRefreshedMovies(List<Movie> movies) {
