@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:layout_behavior="@string/fab_aware_scrolling_view_behavior"
     tools:context="com.shrimpcolo.johnnytam.ishuying.HomeActivity"
     tools:showIn="@layout/activity_home">
+    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
     <LinearLayout
         android:id="@+id/tab_container"

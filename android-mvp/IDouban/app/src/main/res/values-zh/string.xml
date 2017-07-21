@@ -72,4 +72,6 @@
 
     <string name="toast_login_error_network">授权出现问题，再试一次吧!</string>
 
+    <string name="fab_aware_scrolling_view_behavior" translatable="false">com.shrimpcolo.johnnytam.ishuying.ui.behavior.FABAwareScrollingViewBehavior</string>
+
 </resources>
