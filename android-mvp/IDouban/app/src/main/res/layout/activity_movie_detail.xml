@@ -6,6 +6,7 @@
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/appbar_height"
         android:fitsSystemWindows="true"
@@ -59,5 +60,14 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_movie_detail"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_anchor="@id/appbar"
+        app:layout_anchorGravity="bottom|right|end"
+        android:src="@mipmap/ic_share"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"/>
 
 </android.support.design.widget.CoordinatorLayout>

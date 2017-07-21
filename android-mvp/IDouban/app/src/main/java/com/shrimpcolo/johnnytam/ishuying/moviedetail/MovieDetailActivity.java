@@ -3,11 +3,11 @@ package com.shrimpcolo.johnnytam.ishuying.moviedetail;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -47,7 +47,8 @@ public class MovieDetailActivity extends BaseActivity implements MovieDetailCont
     protected void initViews(Bundle savedInstanceState) {
         setContentView(R.layout.activity_movie_detail);
 
-        initToolbar();
+        //initToolbar();
+        initFab();
 
         //setup view pager
         ViewPager viewPager = (ViewPager) findViewById(R.id.movie_viewpager);
@@ -57,21 +58,26 @@ public class MovieDetailActivity extends BaseActivity implements MovieDetailCont
     }
 
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.movie_toolbar);
-        toolbar.inflateMenu(R.menu.menu_movie_detail);
-        toolbar.setOnMenuItemClickListener(item -> {
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.movie_toolbar);
+//        toolbar.inflateMenu(R.menu.menu_movie_detail);
+//        toolbar.setOnMenuItemClickListener(item -> {
+//
+//            switch (item.getItemId()) {
+//                case R.id.menu_action_share:
+//                    Log.d(TAG, "Share the movie info!");
+//                    showShare();
+//                    break;
+//                default :
+//                    break;
+//            }
+//
+//            return true;
+//        });
+    }
 
-            switch (item.getItemId()) {
-                case R.id.menu_action_share:
-                    Log.d(TAG, "Share the movie info!");
-                    showShare();
-                    break;
-                default :
-                    break;
-            }
-
-            return true;
-        });
+    private void initFab() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_movie_detail);
+        fab.setOnClickListener(view -> showShare());
     }
 
     private void showShare() {
