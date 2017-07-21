@@ -200,6 +200,10 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+//        final ActionBar ab = getSupportActionBar();
+//        ab.setHomeAsUpIndicator(R.mipmap.ic_menu);
+//        ab.setDisplayHomeAsUpEnabled(true);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());

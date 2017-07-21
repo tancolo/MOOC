@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 
 import com.shrimpcolo.johnnytam.ishuying.R;
@@ -36,6 +37,8 @@ public class BookDetailActivity extends BaseActivity {
     protected void initViews(Bundle savedInstanceState) {
         setContentView(R.layout.activity_book_detail);
 
+        initToolbar();
+
         initCollapsingToolbarTitle();
 
         showPicassoImage();
@@ -44,6 +47,12 @@ public class BookDetailActivity extends BaseActivity {
         setupViewPager(viewPager);
 
         initTabLayout(viewPager);
+    }
+
+    private void initToolbar() {
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.book_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void initCollapsingToolbarTitle() {

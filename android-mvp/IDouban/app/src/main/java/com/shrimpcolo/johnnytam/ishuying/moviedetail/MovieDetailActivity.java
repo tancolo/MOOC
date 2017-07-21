@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -47,7 +48,7 @@ public class MovieDetailActivity extends BaseActivity implements MovieDetailCont
     protected void initViews(Bundle savedInstanceState) {
         setContentView(R.layout.activity_movie_detail);
 
-        //initToolbar();
+        initToolbar();
         initFab();
 
         //setup view pager
@@ -58,7 +59,10 @@ public class MovieDetailActivity extends BaseActivity implements MovieDetailCont
     }
 
     private void initToolbar() {
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.movie_toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.movie_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 //        toolbar.inflateMenu(R.menu.menu_movie_detail);
 //        toolbar.setOnMenuItemClickListener(item -> {
 //
