@@ -205,7 +205,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
 //        ab.setDisplayHomeAsUpEnabled(true);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+        fab.setOnClickListener(view -> Snackbar.make(view, R.string.fab_tips, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
 
     }
