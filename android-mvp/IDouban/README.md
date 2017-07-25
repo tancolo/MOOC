@@ -17,7 +17,7 @@
 # Demo
 [googleplay-IShuying](https://play.google.com/store/apps/details?id=com.shrimpcolo.johnnytam.ishuying)
 
-[local file](/resource/IShuying-1.0.apk)
+[local file](https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/IShuying-1.0.apk)
 
 
 # 说明
