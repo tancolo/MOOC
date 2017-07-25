@@ -12,12 +12,12 @@
 8. 一份可以直接拿来使用的源码。
 
 # 效果图
-https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/demo.gif
+![](https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/demo.gif)
 
 # Demo
 [googleplay-IShuying](https://play.google.com/store/apps/details?id=com.shrimpcolo.johnnytam.ishuying)
 
-[local file](https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/IShuying-1.0.apk)
+[local file](/resource/IShuying-1.0.apk)
 
 
 # 说明
@@ -27,13 +27,13 @@ https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/demo.gi
 
 建议查看mvp-dev—more分支，IShuying-1.0.apk基于该分支编译生成！
 
+master分子资源文件太多，git clone mvp-dev—more分支！
+
 
 # 您的支持
 1. 觉得不错，可以给我点个赞， 顺便告知其他小伙伴。
 2. 要是代码帮了您，可以考虑购买我的课程 [Android MVP实践](http://edu.csdn.net/course/detail/4753)
 或者给我捐赠， 多少随意！
 
-![支付宝转账](https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/zhifubao.jpg)
-![微信转账](https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/weixin.png)
-
+<img src="https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/zhifubao.jpg" width = "200" height = "200" alt="支付宝"><img src="https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/weixin.png" width = "200" height = "200" alt="微信">
 
