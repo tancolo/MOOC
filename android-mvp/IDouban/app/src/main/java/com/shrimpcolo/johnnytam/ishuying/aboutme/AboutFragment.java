@@ -51,7 +51,7 @@ public class AboutFragment extends Fragment implements LoginListener{
         int color = getResources().getColor(R.color.color_profile_photo_border);
 
         Picasso.with(getActivity())
-                .load(R.mipmap.dayuhaitang)
+                .load(R.mipmap.mudingtang)
                 .transform(new CircleTransformation(width, color))
                 .into(profileImage);
 
@@ -99,7 +99,7 @@ public class AboutFragment extends Fragment implements LoginListener{
         int color = getResources().getColor(R.color.color_profile_photo_border);
 
         Picasso.with(getActivity())
-                .load(R.mipmap.dayuhaitang)
+                .load(R.mipmap.mudingtang)
                 .resize(size, size)
                 .transform(new CircleTransformation(width, color))
                 .into(profileImage);

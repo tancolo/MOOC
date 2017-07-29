@@ -521,7 +521,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
 
         } else { //Logout status ==> default status
             Picasso.with(this)
-                    .load(R.mipmap.dayuhaitang)
+                    .load(R.mipmap.mudingtang)
                     .resize(size, size)
                     .transform(new CircleTransformation(width, color))
                     .into(mProfileView);
