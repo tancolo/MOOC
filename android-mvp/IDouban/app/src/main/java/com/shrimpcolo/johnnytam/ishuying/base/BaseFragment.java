@@ -28,7 +28,7 @@ public abstract class BaseFragment<T> extends Fragment {
 
     protected LinearLayoutManager mLayoutManager;
 
-//    protected FloatingActionButton mFab;
+//    protected FloatingActionButton mFab; 第三方FAB，已经不用
 
     public BaseFragment() {
         // Required empty public constructor
