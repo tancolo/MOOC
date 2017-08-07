@@ -30,7 +30,6 @@ public abstract class BaseFragment<T> extends Fragment {
 
 //    protected FloatingActionButton mFab;
 
-
     public BaseFragment() {
         // Required empty public constructor
     }

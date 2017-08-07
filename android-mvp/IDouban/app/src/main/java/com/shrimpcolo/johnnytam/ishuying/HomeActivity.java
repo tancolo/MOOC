@@ -207,7 +207,6 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(view -> Snackbar.make(view, R.string.fab_tips, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
-
     }
 
     private void initDrawerLayout() {
