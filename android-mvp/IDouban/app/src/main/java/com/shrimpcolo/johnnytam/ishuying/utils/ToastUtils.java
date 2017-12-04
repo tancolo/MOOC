@@ -5,8 +5,8 @@ import android.widget.Toast;
 
 import com.shrimpcolo.johnnytam.ishuying.IShuYingApplication;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 public class ToastUtils {

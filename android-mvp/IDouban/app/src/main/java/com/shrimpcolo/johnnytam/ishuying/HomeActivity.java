@@ -49,13 +49,14 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class HomeActivity extends BaseActivity implements LoginListenerObservable {
 
@@ -75,20 +76,21 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
 
     private List<LoginListener> mLoginListenerList;
 
-    private Subscription mSubscription;
+    private CompositeDisposable mCompositeDisposable;
 
     @Override
     protected void initVariables() {
         mLoginListenerList = new ArrayList<>();
         //debug activity task
-        Log.i(TAG, "task id: " +  getTaskId());
+        Log.i(TAG, "task id: " + getTaskId());
         execAutoLoginProcess();
     }
 
     private void execAutoLoginProcess() {
         Log.e(TAG, "===> initVariables start ---- ");
         //获取缓存，并将数据保存到全局UserInfo中，用于自动登录
-        Observable.just(IShuYingApplication.getInstance().getSharedPreferences().getBoolean(Preferences.PREFERENCE_AUTO_LOGIN, false))
+        Observable.just(IShuYingApplication.getInstance()
+                .getSharedPreferences().getBoolean(Preferences.PREFERENCE_AUTO_LOGIN, false))
                 .filter(autoLogin -> autoLogin)
                 .map(autoLogin -> FileUtils.recoverySerializableUser())
                 .filter(userInfo -> userInfo != null)
@@ -107,45 +109,40 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         Log.e(TAG, "===> initVariables start ---- ");
         //获取缓存，并将数据保存到全局UserInfo中，用于自动登录
         Observable.just(IShuYingApplication.getInstance().getSharedPreferences().getBoolean(Preferences.PREFERENCE_AUTO_LOGIN, false))
-                .filter(new Func1<Boolean, Boolean>() {
-                    @Override
-                    public Boolean call(Boolean autoLogin) {
-                        Log.d(TAG, "filter: autoLogin = " + autoLogin);
-                        return autoLogin;
-                    }
+                .filter(autoLogin -> {
+                    Log.d(TAG, "filter: autoLogin = " + autoLogin);
+                    return autoLogin;
                 })
-                .map(new Func1<Boolean, UserInfo>() {
-                    @Override
-                    public UserInfo call(Boolean autoLogin) {
-                        Log.d(TAG, "map: autoLogin = " + autoLogin);
-                        return FileUtils.recoverySerializableUser();
-                    }
+                .map(autoLogin -> {
+                    Log.d(TAG, "map: autoLogin = " + autoLogin);
+                    return FileUtils.recoverySerializableUser();
                 })
-                .filter(new Func1<UserInfo, Boolean>() {
-                    @Override
-                    public Boolean call(UserInfo userInfo) {
-                        Log.d(TAG, "filter2 : userInfo = " + userInfo);
-                        return userInfo != null;
-                    }
+
+                .filter(userInfo -> {
+                    Log.d(TAG, "filter2 : userInfo = " + userInfo);
+                    return userInfo != null;
                 })
-                .doOnNext(new Action1<UserInfo>() {
-                    @Override
-                    public void call(UserInfo userInfo) {
-                        IShuYingApplication.getInstance().setUser(userInfo);
-                        Log.d(TAG, "doOnNext: setUser...");
-                    }
+                .doOnNext(userInfo -> {
+                    IShuYingApplication.getInstance().setUser(userInfo);
+                    Log.d(TAG, "doOnNext: setUser...");
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<UserInfo>() {
-                    @Override
-                    public void onCompleted() {
-                        Log.d(TAG, "onCompleted: ...");
-                    }
+                .subscribe(new Observer<UserInfo>() {
 
                     @Override
                     public void onError(Throwable e) {
                         Log.d(TAG, "onError: ...");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onCompleted: ...");
+                    }
+
+                    @Override
+                    public void onSubscribe(@NonNull Disposable disposable) {
+                        mCompositeDisposable.add(disposable);
                     }
 
                     @Override
@@ -161,7 +158,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
     @Override
     protected void initViews(Bundle savedInstanceState) {
         setContentView(R.layout.activity_home);
-
+        mCompositeDisposable = new CompositeDisposable();
         initFAB();
 
         initDrawerLayout();
@@ -195,7 +192,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         Log.e(TAG, "===> onResume");
     }
 
-    private void initFAB () {
+    private void initFAB() {
         Log.e(TAG, "===> initFAB");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -239,14 +236,15 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
                         mLinearLayout.setVisibility(View.VISIBLE);
                     }
 
-                    getSupportFragmentManager().getFragments().forEach(fragment -> {
-                        if (fragment.getTag().equals(ConstContent.MENU_BLOG) ||
-                                fragment.getTag().equals(ConstContent.MENU_ABOUT)) {
-                            transaction.hide(fragment);
-                        } else {
-                            transaction.show(fragment);
-                        }
-                    });
+                    mCompositeDisposable.add(Observable.fromIterable(getSupportFragmentManager().getFragments())
+                            .forEach(fragment -> {
+                                if (fragment.getTag().equals(ConstContent.MENU_BLOG) ||
+                                        fragment.getTag().equals(ConstContent.MENU_ABOUT)) {
+                                    transaction.hide(fragment);
+                                } else {
+                                    transaction.show(fragment);
+                                }
+                            }));
 
                     break;
                 case R.id.navigation_item_blog:
@@ -274,16 +272,17 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
                 case R.id.navigation_item_about:
                 case R.id.navigation_item_blog:
 
-                    getSupportFragmentManager().getFragments().forEach(fragment -> {
-                        String fragmentTag = fragment.getTag();
-                        if ((item.getItemId() == R.id.navigation_item_blog && fragmentTag.equals(ConstContent.MENU_BLOG))
-                                || (item.getItemId() == R.id.navigation_item_about && fragmentTag.equals(ConstContent.MENU_ABOUT))) {
-                            transaction.show(fragment);
-                        } else {
-                            transaction.hide(fragment);
-                        }
+                    mCompositeDisposable.add(Observable.fromIterable(getSupportFragmentManager().getFragments())
+                            .forEach(fragment -> {
+                                String fragmentTag = fragment.getTag();
+                                if ((item.getItemId() == R.id.navigation_item_blog && fragmentTag.equals(ConstContent.MENU_BLOG))
+                                        || (item.getItemId() == R.id.navigation_item_about && fragmentTag.equals(ConstContent.MENU_ABOUT))) {
+                                    transaction.show(fragment);
+                                } else {
+                                    transaction.hide(fragment);
+                                }
 
-                    });
+                            }));
                     break;
 
                 case R.id.navigation_item_login:
@@ -334,14 +333,15 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
                 }
 
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                getSupportFragmentManager().getFragments().forEach(fragment -> {
-                    if (ConstContent.MENU_ABOUT.equals(fragment.getTag())) {
-                        transaction.show(fragment);
-                    } else {
-                        transaction.hide(fragment);
-                    }
+                mCompositeDisposable.add(Observable.fromIterable(getSupportFragmentManager().getFragments())
+                        .forEach(fragment -> {
+                            if (ConstContent.MENU_ABOUT.equals(fragment.getTag())) {
+                                transaction.show(fragment);
+                            } else {
+                                transaction.hide(fragment);
+                            }
 
-                });
+                        }));
 
                 transaction.commit();
                 mDrawerLayout.closeDrawers();
@@ -367,6 +367,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         createOtherPresenter(jianshuFragment);
 
     }
+
     private void createOtherPresenter(BlogContract.View blogFragment) {
         Log.d(TAG, "===> createOtherPresenter");
         new BlogPresenter(DoubanManager.createDoubanService(), blogFragment);
@@ -376,7 +377,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         Log.d(TAG, "===> initTabLayout");
         TabLayout tabLayout = (TabLayout) findViewById(R.id.douban_sliding_tabs);
 
-        if(tabLayout != null) {
+        if (tabLayout != null) {
             tabLayout.addTab(tabLayout.newTab());
             tabLayout.addTab(tabLayout.newTab());
             tabLayout.setupWithViewPager(mViewPager);
@@ -414,17 +415,17 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConstContent.ACTION_LOGIN_STATUS_CHANGED);
 
-        mSubscription = RxBroadcast.fromLocalBroadcast(this, filter)
+        mCompositeDisposable.add(RxBroadcast.fromLocalBroadcast(this, filter)
                 .filter(intent -> ConstContent.ACTION_LOGIN_STATUS_CHANGED.equals(intent.getAction()))
                 .map(intent -> intent.getBooleanExtra(ConstContent.INTENT_PARAM_IS_LOGIN, false))
                 .subscribe(isLogin -> {
                     Log.e(TAG, "isLogin； " + isLogin);
                     if (isLogin) {
                         onLoginSuccess();
-                    }else {
+                    } else {
                         onLogoutSuccess();
                     }
-                });
+                }));
 
     }
 
@@ -445,7 +446,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         updateHeaderViewProfile();
 
         //notify other listeners
-        Observable.from(mLoginListenerList)
+        Observable.fromIterable(mLoginListenerList)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(LoginListener::onLoginSuccess);
     }
@@ -456,7 +457,7 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
         //update Navigation head view, photo & name to default status.
         updateHeaderViewProfile();
 
-        Observable.from(mLoginListenerList)
+        Observable.fromIterable(mLoginListenerList)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(LoginListener::onLogoutSuccess);
     }
@@ -528,16 +529,16 @@ public class HomeActivity extends BaseActivity implements LoginListenerObservabl
 
             mProfileName.setText(R.string.author_name);
         }
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        Log.d(TAG, "===> onDestroy: isUnsubscribed -> " + mSubscription.isUnsubscribed());
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
+
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.dispose();
         }
+
     }
 }

@@ -21,12 +21,16 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * refer to https://github.com/ianhanniballake/cheesesquare/tree/scroll_aware_fab and
@@ -46,12 +50,15 @@ public class FABAwareScrollingViewBehavior extends AppBarLayout.ScrollingViewBeh
 
     private FloatingActionButton mFloatingActionBar;
 
+    private CompositeDisposable mCompositeDisposable;
+
     public FABAwareScrollingViewBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mVisible = true;
         mFloatingActionBar = null;
-        //Log.e(TAG, "FABAwareScrollingViewBehavior() ");
+        mCompositeDisposable = new CompositeDisposable();
+        Log.e(TAG, "FABAwareScrollingViewBehavior() ");
     }
 
     @Override
@@ -63,7 +70,7 @@ public class FABAwareScrollingViewBehavior extends AppBarLayout.ScrollingViewBeh
 
     @Override
     public boolean onStartNestedScroll(final CoordinatorLayout coordinatorLayout, final View child,
-            final View directTargetChild, final View target, final int nestedScrollAxes) {
+                                       final View directTargetChild, final View target, final int nestedScrollAxes) {
         //Log.e(TAG, "onStartNestedScroll() ");
         // Ensure we react to vertical scrolling
         return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL
@@ -72,22 +79,25 @@ public class FABAwareScrollingViewBehavior extends AppBarLayout.ScrollingViewBeh
 
     @Override
     public void onNestedScroll(final CoordinatorLayout coordinatorLayout, final View child,
-            final View target, final int dxConsumed, final int dyConsumed,
-            final int dxUnconsumed, final int dyUnconsumed) {
+                               final View target, final int dxConsumed, final int dyConsumed,
+                               final int dxUnconsumed, final int dyUnconsumed) {
 
         //Log.e(TAG, "onNestedScroll() ");
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
         if (dyConsumed > 0) {
             // User scrolled down -> hide the FAB
             List<View> dependencies = coordinatorLayout.getDependencies(child);
-            dependencies.stream().filter(view -> view instanceof FloatingActionButton).forEach(view -> {
-                //((FloatingActionButton) view).hide(); //scaling animation
-                toggle(false, true, view);
-            });
+            Observable.fromIterable(dependencies)
+                    .filter(view -> view instanceof FloatingActionButton)
+                    .forEach(view -> {
+                        //((FloatingActionButton) view).hide(); //scaling animation
+                        toggle(false, true, view);
+                    });
+
         } else if (dyConsumed < 0) {
             // User scrolled up -> show the FAB
             List<View> dependencies = coordinatorLayout.getDependencies(child);
-            dependencies.stream()
+            Observable.fromIterable(dependencies)
                     .filter(view -> view instanceof FloatingActionButton)
                     .forEach(view -> {
                         //((FloatingActionButton) view).show();

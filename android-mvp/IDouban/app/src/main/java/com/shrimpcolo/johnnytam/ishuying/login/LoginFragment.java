@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.shrimpcolo.johnnytam.ishuying.IShuYingApplication;
 import com.shrimpcolo.johnnytam.ishuying.R;
 import com.shrimpcolo.johnnytam.ishuying.api.DoubanManager;

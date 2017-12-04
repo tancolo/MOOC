@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.shrimpcolo.johnnytam.ishuying.beans.PlatformWrapper;
 
 import cn.sharesdk.framework.Platform;
-import rx.Observable;
+import io.reactivex.Observable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -17,7 +17,7 @@ public final class ShareSdkObservable {
     public static Observable<PlatformWrapper> login(@NonNull Platform platform) {
         checkNotNull(platform, "platform == null");
 
-        return Observable.create(new LoginEventOnSubscribe(platform));
+        return Observable.create(new LoginEventObservable(platform));
     }
 
 

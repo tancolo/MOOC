@@ -1,6 +1,5 @@
 package com.shrimpcolo.johnnytam.ishuying.movies;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.shrimpcolo.johnnytam.ishuying.HomeActivity;
@@ -10,12 +9,12 @@ import com.shrimpcolo.johnnytam.ishuying.beans.Movie;
 
 import java.util.List;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import retrofit2.Call;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,9 +32,9 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
     private Call<HotMoviesInfo> mMoviesRetrofitCallback;
 
-    private Subscription mSubscription;
+    private Disposable mDisposable;
 
-    private CompositeSubscription mCompositeSubscription;
+    private CompositeDisposable mCompositeDisposable;
 
     public MoviesPresenter(@NonNull IDoubanService moviesService, @NonNull MoviesContract.View moviesView) {
         mIDuobanService = checkNotNull(moviesService, "IDoubanServie cannot be null!");
@@ -44,7 +43,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
         Log.i(HomeActivity.TAG, TAG + ", MoviesPresenter: create!");
         mMoviesView.setPresenter(this);
 
-        mCompositeSubscription = new CompositeSubscription();
+        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -68,14 +67,9 @@ public class MoviesPresenter implements MoviesContract.Presenter {
             return;
         }
 
-        mCompositeSubscription.add(mIDuobanService.searchHotMoviesWithRxJava(movieStartIndex)
-                .subscribeOn(Schedulers.io())
+        mIDuobanService.searchHotMoviesWithRxJava(movieStartIndex)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<HotMoviesInfo>() {
-                    @Override
-                    public void onCompleted() {
-                        Log.i(HomeActivity.TAG, "===> onCompleted 22: Thread.Id = " + Thread.currentThread().getId());
-                    }
+                .subscribe(new Observer<HotMoviesInfo>() {
 
                     @Override
                     public void onError(Throwable e) {
@@ -83,6 +77,16 @@ public class MoviesPresenter implements MoviesContract.Presenter {
                                 + Thread.currentThread().getId() + ", Error: " + e.getMessage());
 
                         processLoadMoreEmptyMovies();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.i(HomeActivity.TAG, "===> onCompleted 22: Thread.Id = " + Thread.currentThread().getId());
+                    }
+
+                    @Override
+                    public void onSubscribe(@NonNull Disposable disposable) {
+                        mCompositeDisposable.add(disposable);
                     }
 
                     @Override
@@ -94,7 +98,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
                         processLoadMoreMovies(moreMoviesList);
                     }
-                }));
+                });
 
     }
 
@@ -107,8 +111,8 @@ public class MoviesPresenter implements MoviesContract.Presenter {
     @Override
     public void unSubscribe() {
         Log.i(HomeActivity.TAG, TAG + "=> unSubscribe all subscribe");
-        if (mCompositeSubscription != null) {
-            mCompositeSubscription.unsubscribe();
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.dispose();
         }
     }
 
@@ -119,9 +123,8 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 //        }
 
         if(forceUpdate) {
-            mCompositeSubscription.add(mIDuobanService.searchHotMoviesWithRxJava(0)
-                    .subscribeOn(Schedulers.io())
-                    .doOnSubscribe(() -> {
+            mIDuobanService.searchHotMoviesWithRxJava(0)
+                    .doOnSubscribe((disposable) -> {
                         Log.i(TAG, "doOnSubscribe");
                         if(showLoadingUI){
                             //MoviesFragment需要显示Loading 界面
@@ -129,21 +132,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
                         }
                     })
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<HotMoviesInfo>() {
-
-                        @Override
-                        public void onStart() {
-                            Log.i(TAG, "onStart-> mSubscription: " + mSubscription);
-                        }
-
-                        @Override
-                        public void onCompleted() {
-                            Log.i(HomeActivity.TAG, "===> onCompleted 11: Thread.Id = " + Thread.currentThread().getId());
-                            //获取数据成功，Loading UI消失
-                            if(showLoadingUI) {
-                                mMoviesView.setRefreshedIndicator(false);
-                            }
-                        }
+                    .subscribe(new Observer<HotMoviesInfo>() {
 
                         @Override
                         public void onError(Throwable e) {
@@ -155,6 +144,20 @@ public class MoviesPresenter implements MoviesContract.Presenter {
                                 mMoviesView.setRefreshedIndicator(false);
                             }
                             processEmptyMovies();
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            Log.i(HomeActivity.TAG, "===> onCompleted 11: Thread.Id = " + Thread.currentThread().getId());
+                            //获取数据成功，Loading UI消失
+                            if(showLoadingUI) {
+                                mMoviesView.setRefreshedIndicator(false);
+                            }
+                        }
+
+                        @Override
+                        public void onSubscribe(@NonNull Disposable disposable) {
+                            mCompositeDisposable.add(disposable);
                         }
 
                         @Override
@@ -170,7 +173,7 @@ public class MoviesPresenter implements MoviesContract.Presenter {
 
                             processMovies(moviesList);
                         }
-                    }));
+                    });
         }
 
     }

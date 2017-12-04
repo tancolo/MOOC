@@ -13,7 +13,7 @@ import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.shrimpcolo.johnnytam.ishuying.R;
 
 

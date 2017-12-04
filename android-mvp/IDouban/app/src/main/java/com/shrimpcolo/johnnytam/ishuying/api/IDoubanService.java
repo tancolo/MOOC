@@ -4,11 +4,11 @@ import com.shrimpcolo.johnnytam.ishuying.beans.BlogsInfo;
 import com.shrimpcolo.johnnytam.ishuying.beans.BooksInfo;
 import com.shrimpcolo.johnnytam.ishuying.beans.HotMoviesInfo;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
-import rx.Observable;
 
 /**
  * Created by Johnny Tam on 2017/4/27.

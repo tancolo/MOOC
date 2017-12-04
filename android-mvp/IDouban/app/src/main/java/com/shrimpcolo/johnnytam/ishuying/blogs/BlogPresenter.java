@@ -1,6 +1,5 @@
 package com.shrimpcolo.johnnytam.ishuying.blogs;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.shrimpcolo.johnnytam.ishuying.HomeActivity;
@@ -11,10 +10,11 @@ import com.shrimpcolo.johnnytam.ishuying.utils.ConstContent;
 
 import java.util.List;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,7 +32,7 @@ public class BlogPresenter implements BlogContract.Presenter {
 
     private boolean mFirstLoad = true;
 
-    private CompositeSubscription mCompositeSubscription;
+    private CompositeDisposable compositeDisposable;
 
     public BlogPresenter(@NonNull IDoubanService blogsService, @NonNull BlogContract.View blogsView) {
         Log.e(HomeActivity.TAG, TAG + "===> BlogPresenter");
@@ -40,7 +40,7 @@ public class BlogPresenter implements BlogContract.Presenter {
         mBlogsView = checkNotNull(blogsView, "BlogsView cannot be null!");
 
         mBlogsView.setPresenter(this);
-        mCompositeSubscription = new CompositeSubscription();
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -59,22 +59,18 @@ public class BlogPresenter implements BlogContract.Presenter {
         //+ Log.getStackTraceString(new Throwable()));
 
         if (forceUpdate) {
-            mCompositeSubscription.add(mBlogsService.getBlogWithRxJava(ConstContent.API_BLOG_WEBSITE)
-                    .subscribeOn(Schedulers.io())
-                    .doOnSubscribe(() -> {
+            mBlogsService.getBlogWithRxJava(ConstContent.API_BLOG_WEBSITE)
+                    .doOnSubscribe(disposable -> {
                         if (showLoadingUI) {
                             mBlogsView.setRefreshedIndicator(true);
                         }
                     })
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<BlogsInfo>() {
+                    .subscribe(new Observer<BlogsInfo>() {
+
                         @Override
-                        public void onCompleted() {
-                            Log.d(HomeActivity.TAG, TAG + "===> onCompleted() " + " showLoadingUI: " + showLoadingUI);
-                            //获取数据成功，Loading UI消失
-                            if(showLoadingUI) {
-                                mBlogsView.setRefreshedIndicator(false);
-                            }
+                        public void onSubscribe(@NonNull Disposable disposable) {
+                            compositeDisposable.add(disposable);
                         }
 
                         @Override
@@ -82,10 +78,19 @@ public class BlogPresenter implements BlogContract.Presenter {
                             Log.e(HomeActivity.TAG, TAG + "===> onError: " + e.getMessage());
 
                             //获取数据成功，Loading UI消失
-                            if(showLoadingUI) {
+                            if (showLoadingUI) {
                                 mBlogsView.setRefreshedIndicator(false);
                             }
                             processEmptyBlogs();
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            Log.d(HomeActivity.TAG, TAG + "===> onCompleted() " + " showLoadingUI: " + showLoadingUI);
+                            //获取数据成功，Loading UI消失
+                            if (showLoadingUI) {
+                                mBlogsView.setRefreshedIndicator(false);
+                            }
                         }
 
                         @Override
@@ -98,9 +103,7 @@ public class BlogPresenter implements BlogContract.Presenter {
 
                             processBlogs(blogList);
                         }
-                    })
-
-            );
+                    });
         }
     }
 
@@ -111,7 +114,9 @@ public class BlogPresenter implements BlogContract.Presenter {
 
     @Override
     public void unSubscribe() {
-
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
+        }
     }
 
     private void processBlogs(List<Blog> blogs) {

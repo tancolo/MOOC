@@ -1,6 +1,5 @@
 package com.shrimpcolo.johnnytam.ishuying.books;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.shrimpcolo.johnnytam.ishuying.HomeActivity;
@@ -10,17 +9,19 @@ import com.shrimpcolo.johnnytam.ishuying.beans.BooksInfo;
 
 import java.util.List;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import retrofit2.Call;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+
 
 /**
  * Created by Johnny Tam on 2017/3/21.
  */
 
-public class BooksPresenter implements BooksContract.Presenter{
+public class BooksPresenter implements BooksContract.Presenter {
 
     private static final String TAG = BooksPresenter.class.getSimpleName();
 
@@ -32,7 +33,7 @@ public class BooksPresenter implements BooksContract.Presenter{
 
     private Call<BooksInfo> mBooksRetrofitCallback;
 
-    private CompositeSubscription mCompositeSubscription;
+    private CompositeDisposable compositeDisposable;
 
     public BooksPresenter(@NonNull IDoubanService booksService, @NonNull BooksContract.View bookFragment) {
         mIDuobanService = booksService;
@@ -40,7 +41,7 @@ public class BooksPresenter implements BooksContract.Presenter{
 
         mBookView.setPresenter(this);
 
-        mCompositeSubscription = new CompositeSubscription();
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -52,13 +53,13 @@ public class BooksPresenter implements BooksContract.Presenter{
     @Override
     public void loadMoreBooks(int start) {
 
-        mCompositeSubscription.add(mIDuobanService.searchBooksWithRxJava("黑客与画家", start)
-                .subscribeOn(Schedulers.io())
+        mIDuobanService.searchBooksWithRxJava("黑客与画家", start)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<BooksInfo>() {
+                .subscribe(new Observer<BooksInfo>() {
+
                     @Override
-                    public void onCompleted() {
-                        Log.i(TAG, "===> Load More Book: onCompleted");
+                    public void onSubscribe(@NonNull Disposable disposable) {
+                        compositeDisposable.add(disposable);
                     }
 
                     @Override
@@ -70,6 +71,11 @@ public class BooksPresenter implements BooksContract.Presenter{
                     }
 
                     @Override
+                    public void onComplete() {
+                        Log.i(TAG, "===> Load More Book: onCompleted");
+                    }
+
+                    @Override
                     public void onNext(BooksInfo booksInfo) {
                         List<Book> loadMoreList = booksInfo.getBooks();
                         //debug
@@ -77,8 +83,7 @@ public class BooksPresenter implements BooksContract.Presenter{
 
                         processLoadMoreBooks(loadMoreList);
                     }
-                }));
-
+                });
     }
 
     @Override
@@ -86,14 +91,14 @@ public class BooksPresenter implements BooksContract.Presenter{
         Log.i(HomeActivity.TAG, TAG + "=> cancelRetrofitRequest() isCanceled = "
                 + mBooksRetrofitCallback.isCanceled());
 
-        if(!mBooksRetrofitCallback.isCanceled()) mBooksRetrofitCallback.cancel();
+        if (!mBooksRetrofitCallback.isCanceled()) mBooksRetrofitCallback.cancel();
     }
 
     @Override
     public void unSubscribe() {
         Log.i(HomeActivity.TAG, TAG + "=> unSubscribe all subscribe");
-        if (mCompositeSubscription != null) {
-            mCompositeSubscription.unsubscribe();
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
         }
     }
 
@@ -103,23 +108,19 @@ public class BooksPresenter implements BooksContract.Presenter{
     }
 
     private void loadBooks(boolean forceUpdate, final boolean showLoadingUI) {
-        if(showLoadingUI){
+        if (showLoadingUI) {
             //BooksFragment需要显示Loading 指示器
             mBookView.setRefreshedIndicator(true);
         }
 
-        if(forceUpdate) {
-            mCompositeSubscription.add(mIDuobanService.searchBooksWithRxJava("黑客与画家", 0)
-                    .subscribeOn(Schedulers.io())
+        if (forceUpdate) {
+            mIDuobanService.searchBooksWithRxJava("黑客与画家", 0)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<BooksInfo>() {
+                    .subscribe(new Observer<BooksInfo>() {
+
                         @Override
-                        public void onCompleted() {
-                            Log.i(HomeActivity.TAG, "===> Search Book: onNext " + ", showLoadingUI: " + showLoadingUI);
-                            //获取数据成功，Loading UI消失
-                            if(showLoadingUI) {
-                                mBookView.setRefreshedIndicator(false);
-                            }
+                        public void onSubscribe(@NonNull Disposable disposable) {
+                            compositeDisposable.add(disposable);
                         }
 
                         @Override
@@ -128,10 +129,19 @@ public class BooksPresenter implements BooksContract.Presenter{
                                     + Thread.currentThread().getId() + ", Error: " + e.getMessage());
 
                             //获取数据成功，Loading UI消失
-                            if(showLoadingUI) {
+                            if (showLoadingUI) {
                                 mBookView.setRefreshedIndicator(false);
                             }
                             processEmptyBooks();
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            Log.i(HomeActivity.TAG, "===> Search Book: onNext " + ", showLoadingUI: " + showLoadingUI);
+                            //获取数据成功，Loading UI消失
+                            if (showLoadingUI) {
+                                mBookView.setRefreshedIndicator(false);
+                            }
                         }
 
                         @Override
@@ -142,12 +152,13 @@ public class BooksPresenter implements BooksContract.Presenter{
 
                             processBooks(booksList);
                         }
-                    }));
+                    });
         }
     }
 
     private void processBooks(List<Book> books) {
-        if (books.isEmpty()) processEmptyBooks();// Show a message indicating there are no movies for users
+        if (books.isEmpty())
+            processEmptyBooks();// Show a message indicating there are no movies for users
         else mBookView.showRefreshedBooks(books); // Show the list of books
     }
 
@@ -156,7 +167,7 @@ public class BooksPresenter implements BooksContract.Presenter{
         mBookView.showNoBooks();
     }
 
-    private void processLoadMoreBooks(List<Book> books){
+    private void processLoadMoreBooks(List<Book> books) {
 
         if (books.isEmpty()) processLoadMoreEmptyBooks();
         else mBookView.showLoadedMoreBooks(books);

@@ -1,6 +1,5 @@
 package com.shrimpcolo.johnnytam.ishuying.login;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.shrimpcolo.johnnytam.ishuying.IShuYingApplication;
@@ -11,6 +10,7 @@ import com.shrimpcolo.johnnytam.ishuying.beans.UserInfo;
 import com.shrimpcolo.johnnytam.ishuying.utils.FileUtils;
 import com.shrimpcolo.johnnytam.ishuying.utils.ToastUtils;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,9 +18,11 @@ import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.sina.weibo.SinaWeibo;
 import cn.sharesdk.tencent.qq.QQ;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,8 +35,7 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
     private IDoubanService loginService;
 
     private LoginContract.Presenter presenter;
-
-    private CompositeSubscription compositeSubscription;
+    private CompositeDisposable compositeDisposable;
 
     public LoginDialogPresenter(@NonNull IDoubanService loginService,
                                 @NonNull LoginContract.LoginDialogView loginDialog,
@@ -45,8 +46,7 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
         this.presenter = checkNotNull(presenter, "presenter == null");
 
         this.loginDialogView.setPresenter(this);
-
-        compositeSubscription = new CompositeSubscription();
+        compositeDisposable = new CompositeDisposable();
     }
 
 
@@ -59,18 +59,24 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
     public void doLoginWithQQ() {
         Platform qqPlatform = ShareSDK.getPlatform(QQ.NAME);
 
-        compositeSubscription.add(ShareSdkObservable.login(qqPlatform)
+        ShareSdkObservable.login(qqPlatform)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<PlatformWrapper>() {
-                    @Override
-                    public void onCompleted() {
-                        Log.e(TAG, "onCompleted");
-                    }
+                .subscribe(new Observer<PlatformWrapper>() {
 
                     @Override
                     public void onError(Throwable e) {
                         ToastUtils.showShortToast(R.string.toast_login_error_network);
                         Log.e(TAG, Log.getStackTraceString(e));
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.e(TAG, "onCompleted");
+                    }
+
+                    @Override
+                    public void onSubscribe(@NonNull Disposable disposable) {
+                        compositeDisposable.add(disposable);
                     }
 
                     @Override
@@ -84,8 +90,7 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
                             }
                         }
                     }
-                }));
-
+                });
 
 
         //authorize(qqPlatform);
@@ -93,8 +98,8 @@ public class LoginDialogPresenter implements LoginContract.LoginDialogPresenter 
 
     @Override
     public void unSubscribe() {
-        if (compositeSubscription != null) {
-            compositeSubscription.unsubscribe();
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
         }
     }
 
