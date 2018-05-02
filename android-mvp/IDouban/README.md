@@ -1,6 +1,8 @@
 # Android MVP实践
 本项目是[csdn慕课](http://edu.csdn.net/lecturer/course_list)配套的代码。
 
+# master分支不再更新，直接查看mvp-dev-more分支
+
 # 有哪些收获？
 1. 神秘兮兮的MVP该怎么写？
 2. Rxjava如何封装ShareSDK的callback为自己的Observable，减少不必要的Handler， callback
