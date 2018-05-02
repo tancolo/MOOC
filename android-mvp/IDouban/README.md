@@ -1,6 +1,8 @@
 # Android MVP实践
 本项目是[csdn慕课](http://edu.csdn.net/lecturer/course_list)配套的代码。
 
+# mvp-dev分支 所有课程代码(已完结)
+
 # 有哪些收获？
 1. 神秘兮兮的MVP该怎么写？
 2. Rxjava如何封装ShareSDK的callback为自己的Observable，减少不必要的Handler， callback
@@ -22,12 +24,14 @@
 
 # 说明
 1. master分支 1~15课程代码
-2. mvp-dev分支 完结所有课程代码
+2. mvp-dev分支 完结所有课程代码 [课程重要参考]
 3. mvp-dev-more分支 其他新的小功能
 
 建议查看mvp-dev—more分支，IShuying-1.0.apk基于该分支编译生成！
 
-master分子资源文件太多，git clone mvp-dev—more分支！
+master分支资源文件太多，查看最新代码请使用如下方式获取 mvp-dev-more分支代码
+
+`git clone -b mvp-dev-more --single--branch https://github.com/tancolo/MOOC.git`
 
 
 # 您的支持
