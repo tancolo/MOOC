@@ -1,0 +1,21 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipe
+.project
+.classpath
+.settings/
+
+# Output dirs
+out/
+target/
+classes/
+build/
+docs/
+.gradle/
+
+# MacOS X
+.DS_Store
