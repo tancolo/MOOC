@@ -82,7 +82,6 @@ fun testParseInt() {
 }
 
 
-
 // "is" operator
 fun getStringLength(obj: Any): Int? {
     if (obj is String) {
@@ -94,7 +93,7 @@ fun getStringLength(obj: Any): Int? {
 
 fun testIsOperator() {
     fun printLength(obj: Any) {
-        println("'$obj' string length is ${getStringLength(obj) ?: "... err, not a string" }")
+        println("'$obj' string length is ${getStringLength(obj) ?: "... err, not a string"}")
     }
 
     printLength("Incomprehensibilities")
@@ -151,7 +150,7 @@ fun testWhen() {
 fun testRange() {
     val x = 10
     val y = 9
-    if (x in 1..y+1) {
+    if (x in 1..y + 1) {
         println("fits in range")
     }
 
@@ -195,12 +194,12 @@ fun testCollection() {
     // lambada
     val fruit = listOf("banana", "avocado", "apple", "kiwifruit")
     fruit
-            .asSequence()
-            .filter { it.startsWith("a") }
-            .sortedBy { it }
-            .map { it.toUpperCase() }
-            .toList()
-            .forEach{ println(it)}
+        .asSequence()
+        .filter { it.startsWith("a") }
+        .sortedBy { it }
+        .map { it.toUpperCase() }
+        .toList()
+        .forEach { println(it) }
 }
 
 
@@ -215,9 +214,9 @@ interface RectangleProperties {
 }
 
 class Rectangle(
-        var height: Double,
-        var length: Double
-): Shape(listOf(height, length, height, length)), RectangleProperties {
+    var height: Double,
+    var length: Double
+) : Shape(listOf(height, length, height, length)), RectangleProperties {
     override val isSquare: Boolean get() = length == height
     override fun calculateArea(): Double = height * length
 }
@@ -227,7 +226,7 @@ class Triangle(
     var sideA: Double,
     var sideB: Double,
     var sideC: Double
-): Shape(listOf(sideA, sideB, sideC)) {
+) : Shape(listOf(sideA, sideB, sideC)) {
     override fun calculateArea(): Double {
         val s = perimeter / 2;
         return Math.sqrt(s * (s - sideA) * (s - sideB) * (s - sideC))
@@ -236,7 +235,7 @@ class Triangle(
 
 fun testShape() {
     val rectangle = Rectangle(5.0, 2.0)
-    val triangle = Triangle(3.0, 4.0,5.0)
+    val triangle = Triangle(3.0, 4.0, 5.0)
     println("Area of rectangle is ${rectangle.calculateArea()}, its perimeter is ${rectangle.perimeter}")
     println("Area of rectangle is ${triangle.calculateArea()}, its perimeter is ${triangle.perimeter}")
 }
