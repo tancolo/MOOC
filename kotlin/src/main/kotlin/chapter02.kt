@@ -1,3 +1,5 @@
+import test.parseInt
+
 /**
  * Kotlin Basic Type
  */
@@ -39,7 +41,17 @@ fun main(args: Array<String>) {
 //        e.printStackTrace()
 //    }
 
+    // test array
+//    testArray()
 
+    // test If Expression
+//    testIfExpression02(1, 3)
+
+    // test when expression
+//    testWhenExpression02(3)
+
+    // test Nothing
+    testBackAndReturn("john.tan")
 }
 
 // box
@@ -71,6 +83,11 @@ fun testBitOperator() {
 }
 
 
+fun testArray() {
+    val asc = Array(5) { i -> (i * i).toString() }
+    asc.forEach { println(it) }
+}
+
 // String template
 fun testStringTemple() {
     val test = """
@@ -86,5 +103,47 @@ fun testStringTemple() {
     """.trimIndent()
 
     println(price)
+
+    val text = """
+    |Tell me and I forget.
+    >Teach me and I remember.
+    |Involve me and I learn.
+    >(Benjamin Franklin)
+    """.trimMargin()
+
+    println(text)
 }
+
+
+fun testIfExpression01(a: Int, b: Int) = if (a > b) a else b
+
+fun testIfExpression02(a: Int, b: Int) {
+    val max = if (a > b) {
+        println("Choose a")
+        a
+    } else {
+        println("Choose b")
+        b
+    }
+}
+
+
+fun testWhenExpression01(x: Int) = when (x) {
+    1 -> print("x == 1")
+    2, 3, 4 -> print("x == 2")
+
+    else -> println("x is neigher 1 nor 2")
+}
+
+fun testWhenExpression02(x: Int) = when (x) {
+    parseInt("s") -> print("s encodes x")
+    parseInt("3") -> print("s encodes x")
+    else -> print("s does not encode x")
+}
+
+fun testBackAndReturn(name: String?) {
+    val s = name ?: throw IllegalAccessException("Name required")
+    println("name is $s")
+}
+
 
