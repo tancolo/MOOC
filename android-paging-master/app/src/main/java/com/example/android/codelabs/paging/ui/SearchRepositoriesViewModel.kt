@@ -16,7 +16,6 @@
 
 package com.example.android.codelabs.paging.ui
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -31,10 +30,6 @@ import com.example.android.codelabs.paging.model.RepoSearchResult
  * The ViewModel works with the [GithubRepository] to get the data.
  */
 class SearchRepositoriesViewModel(private val repository: GithubRepository) : ViewModel() {
-
-    companion object {
-        private const val VISIBLE_THRESHOLD = 5
-    }
 
     private val queryLiveData = MutableLiveData<String>()
     private val repoResult: LiveData<RepoSearchResult> = Transformations.map(queryLiveData) {
@@ -51,19 +46,6 @@ class SearchRepositoriesViewModel(private val repository: GithubRepository) : Vi
      */
     fun searchRepo(queryString: String) {
         queryLiveData.postValue(queryString)
-    }
-
-    fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
-//        Log.d("TANCOLO", "===> visibleItemCount: $visibleItemCount, lastVisibleItemPosition: $lastVisibleItemPosition" +
-//                ", totalItemCount: $totalItemCount")
-
-        if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
-            Log.d("TANCOLO", "===> NEED TO LOAD MORE")
-            val immutableQuery = lastQueryValue()
-            if (immutableQuery != null) {
-                repository.requestMore(immutableQuery)
-            }
-        }
     }
 
     /**

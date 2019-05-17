@@ -17,10 +17,8 @@
 package com.example.android.codelabs.paging.data
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.LivePagedListBuilder
 import com.example.android.codelabs.paging.api.GithubService
-import com.example.android.codelabs.paging.api.searchRepos
 import com.example.android.codelabs.paging.db.GithubLocalCache
 import com.example.android.codelabs.paging.model.RepoSearchResult
 
@@ -28,18 +26,9 @@ import com.example.android.codelabs.paging.model.RepoSearchResult
  * Repository class that works with local and remote data sources.
  */
 class GithubRepository(
-    private val service: GithubService,
-    private val cache: GithubLocalCache
+        private val service: GithubService,
+        private val cache: GithubLocalCache
 ) {
-
-
-
-    // LiveData of network errors.
-    private val networkErrors = MutableLiveData<String>()
-
-    // avoid triggering multiple requests in the same time
-    private var isRequestInProgress = false
-
     /**
      * Search repositories whose names match the query.
      */
@@ -49,33 +38,19 @@ class GithubRepository(
         // Get data source factory from the local cache
         val dataSourceFactory = cache.reposByName(query)
 
+        // Construct the boundary callback
+        val boundaryCallback = RepoBoundaryCallback(query, service, cache)
+        val networkErrors = boundaryCallback.networkErrors
+
         // Get the paged list
-        val data = LivePagedListBuilder(dataSourceFactory, DATABASE_PAGE_SIZE).build()
+        val data = LivePagedListBuilder(dataSourceFactory, DATABASE_PAGE_SIZE)
+                .setBoundaryCallback(boundaryCallback)
+                .build()
 
         return RepoSearchResult(data, networkErrors)
     }
 
-    fun requestMore(query: String) {
-        requestAndSaveData(query)
-    }
-
-    private fun requestAndSaveData(query: String) {
-//        if (isRequestInProgress) return
-//
-//        isRequestInProgress = true
-//        searchRepos(service, query, lastRequestedPage, NETWORK_PAGE_SIZE, { repos ->
-//            cache.insert(repos) {
-//                lastRequestedPage++
-//                isRequestInProgress = false
-//            }
-//        }, { error ->
-//            networkErrors.postValue(error)
-//            isRequestInProgress = false
-//        })
-    }
-
     companion object {
-        private const val NETWORK_PAGE_SIZE = 50
         private const val DATABASE_PAGE_SIZE = 20
     }
 }

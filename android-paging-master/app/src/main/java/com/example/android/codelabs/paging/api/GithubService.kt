@@ -51,7 +51,7 @@ fun searchRepos(
     onSuccess: (repos: List<Repo>) -> Unit,
     onError: (error: String) -> Unit
 ) {
-    Log.d(TAG, "query: $query, page: $page, itemsPerPage: $itemsPerPage")
+    Log.d(TAG, "===> query: $query, page: $page, itemsPerPage: $itemsPerPage")
 
     val apiQuery = query + IN_QUALIFIER
 
