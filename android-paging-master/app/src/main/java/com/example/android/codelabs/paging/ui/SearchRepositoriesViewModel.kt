@@ -16,10 +16,12 @@
 
 package com.example.android.codelabs.paging.ui
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.paging.PagedList
 import com.example.android.codelabs.paging.data.GithubRepository
 import com.example.android.codelabs.paging.model.Repo
 import com.example.android.codelabs.paging.model.RepoSearchResult
@@ -39,7 +41,7 @@ class SearchRepositoriesViewModel(private val repository: GithubRepository) : Vi
         repository.search(it)
     }
 
-    val repos: LiveData<List<Repo>> = Transformations.switchMap(repoResult) { it -> it.data }
+    val repos: LiveData<PagedList<Repo>> = Transformations.switchMap(repoResult) { it -> it.data }
     val networkErrors: LiveData<String> = Transformations.switchMap(repoResult) { it ->
         it.networkErrors
     }
@@ -52,7 +54,11 @@ class SearchRepositoriesViewModel(private val repository: GithubRepository) : Vi
     }
 
     fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
+//        Log.d("TANCOLO", "===> visibleItemCount: $visibleItemCount, lastVisibleItemPosition: $lastVisibleItemPosition" +
+//                ", totalItemCount: $totalItemCount")
+
         if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
+            Log.d("TANCOLO", "===> NEED TO LOAD MORE")
             val immutableQuery = lastQueryValue()
             if (immutableQuery != null) {
                 repository.requestMore(immutableQuery)
