@@ -12,7 +12,7 @@
 2. 看视频
 Kotlin跟Java开发比较
 google I/O 大会 Kotlin的视频截取， 就是比较java & Kotlin 编写java bean的.. 非常深刻印象
-
+https://www.youtube.com/watch?v=X1RVYt2QKQE ==> 
 
 # 为什么要选这个主题
 上手Kotlin不难，有编程语言基础，特别是Java基础。 基本语法对照官方参考文档过一遍就基本了解了。
