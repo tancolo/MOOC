@@ -19,3 +19,6 @@ docs/
 
 # MacOS X
 .DS_Store
+
+# others type
+*.attach_pid*
