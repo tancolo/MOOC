@@ -10,7 +10,7 @@
 
 所以，本专栏围绕3个部分展开：
 1. 将我在项目中使用到Kotlin的知识点梳理一遍， 聪明的你肯定也猜到了会有哪些的内容。
-但请注意，不会去介绍val,var是什么， 条件语句怎么写之类的, 那是浪费大家的时间而已。
+但请注意，不会去介绍val,var是什么， 条件语句怎么写之类的, 那是浪费时间而已。
 
 2. 讲解Jetpack组件内容，确实是给自己挖坑，从我现在实践到的，内容超级多。
 给自己一个挑战，看能完成多少。 尽可能的把在项目中使用的Jetpack组件，在网络上找到对应的sample。
@@ -21,19 +21,19 @@
 # 专栏大纲
 
 ## 发刊词和导论
-我了解关注Kotlin还要追溯到2016年，当时是经过朋友说, "嘿， 最近有个新的语言出来了，叫Kotlin, 这个有意思"
+了解关注Kotlin还要追溯到2016年，当时是经过朋友说, "嘿， 最近有个新的语言出来了，叫Kotlin, 这个有意思"
 1. 语法简洁， 支持Lambda
 3. 支持函数链式调用
 2. 兼容Java， 实现同样的功能代码量少
 
 记得当时我的反应是： "是吗？ Java挺好的啊"。 那时正好是里约奥运会，然后尝试用Kotlin写了个简单的代码，针对奖牌榜进行排序并打印的例子， 
-链式调用，一起哈成。 后续考虑在讲解Kotlin的时候加入一些小例子， 读者不妨一起来玩玩，动下小脑筋。
+链式调用，一气呵成。 后续考虑在讲解Kotlin的时候加入一些小例子， 读者不妨一起来玩玩，动下小脑筋。
 
-对Kotlin的第一亲密接触就是over了，后续还是停留在写Demo阶段，但在实际项目中并没有去实践。 接手的项目都是Java, 能做的也就是用MVP模式改造重写。
+对Kotlin的第一亲密接触就这样over了，后续还是停留在写Demo阶段，并没有在实际项目中实践。 接手的项目都是Java, 能做的也就是用MVP模式改造重写。
 在现在的公司，经历了2个项目， 一个是在Play Store有着100M+下载量[AXEL](https://play.google.com/store/apps/details?id=com.stoamigo.storage&hl=en&showAllReviews=true);
 另一个是正在开发的Wallet项目，Kotlin为主 Java为辅。 完整的经历了一个Kotlin开发。
 我们是个小型的国际化团队，小组成员有国内的，国外的，有在家办公的， code view非常严格， 有时候是几乎重写自己提交的代码。
-Why? 按照Leader以及reviewer话说，用更多的Kotlin,而不是Java； 代码风格要基本一致。
+Why? 按照Leader以及reviewer话说，用更多的Kotlin,而不是Java； 代码风格要一致。
 
 Kotlin只是语言, 实际开发还是要采用分层模式， 采用了很多[JetPack](https://developer.android.com/jetpack)项目中的Components.
 https://prnt.sc/ogn08e  红框标记是在项目中使用，还有其他的Components.
@@ -57,17 +57,20 @@ https://prnt.sc/ogn08e  红框标记是在项目中使用，还有其他的Compo
 
 
 ## 大纲
-现阶段还是仅限于总结自己实践的内容。 此处应该有 类似得到app那样的课程
+现阶段还是仅限于总结自己实践的内容。 此处应该有 类似得到app那样的课程doc
 *备注： 以下内容为不完全目录，部分专题可能会有更新和调整*
 
 ### Kotlin重点内容
+- Null Safety
 - Extension Function
-- 
- 
+- Data Class
+- Type Aliases
+- Function and Lambdas
+- Coroutines
 
-  
+### Android App架构
 
 
-
+### JetPact组件
 
 
