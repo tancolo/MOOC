@@ -69,8 +69,17 @@ https://prnt.sc/ogn08e  红框标记是在项目中使用，还有其他的Compo
 - Coroutines
 
 ### Android App架构
+参考图形 [Android App Architecture](../../blogmaterial/android-app-final-architecture.png)
+说明如下:
+1. Activity / Fragment  就是UI显示层 VIEW
+2. Repository "数据驱动层"  Model
+3. ViewModel  View-Model层
 
 
-### JetPact组件
+### Jetpact组件
+Jetpact组件太丰富了， 只能对一些主要的组件进行分享， 大概的内容会包含 https://prnt.sc/ogn08e
+
+
+
 
 
