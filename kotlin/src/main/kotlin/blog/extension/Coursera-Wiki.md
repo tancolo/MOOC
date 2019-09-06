@@ -62,7 +62,7 @@ https://prnt.sc/ogn08e  红框标记是在项目中使用，还有其他的Compo
 
 ### Kotlin重点内容
 - Null Safety
-- Extension Function
+- Extension
 - Data Class
 - Type Aliases
 - Function and Lambdas

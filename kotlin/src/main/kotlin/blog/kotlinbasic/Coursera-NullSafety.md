@@ -5,11 +5,11 @@
 这里推荐官方的[Koans](https://play.kotlinlang.org/koans/overview) 
 和 [Example](https://play.kotlinlang.org/byExample/overview)
 - Koans 侧重实战， 题目给的是Java实现，如何用Kotlin的知识点完成
-- Example这个学习模块 偏向讲解，内容更多些，也提供在线的Kotlin环境来练习
+- Example 这个学习模块 偏向讲解，内容更多些，也提供在线的Kotlin环境来练习
 
 本篇主题需要参考: 
-- [Kotlin 英文](https://kotlinlang.org/docs/reference/null-safety.html)
-- [Kotlin 中文](https://www.kotlincn.net/docs/reference/null-safety.html)
+- [Null Safety 英文](https://kotlinlang.org/docs/reference/null-safety.html)
+- [Null Safety 中文](https://www.kotlincn.net/docs/reference/null-safety.html)
 
 
 ## Null Safety Sample 
@@ -114,6 +114,23 @@ val l: Int = if (b != null) b.length else -1
 ```kotlin
 val l = b?.length ?: -1
 ```
+
+
+## 实际项目中的使用
+这是执行`onActivityResult`的例子
+```kotlin
+override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+if (requestCode == XXXX_CODE) {
+            if (resultCode == RESULT_OK) {
+                intent?.data?.host?.takeIf { isValid(it) }?.run {
+                    XXXViewModel.XXX.value = this
+                }
+            }
+        }
+}
+```
+有同学肯定会说 "你怎么用if, 而且还2个 if", 确实，代码是可以改进的，Kotlin并没有排斥使用 if.. else 之类的条件语法。
+这里的重点是实际项目中使用 **Null Safety**非常的多， 而且可以结合 let, run, apply, also 形成链式调用。 
 
 ## 其他
 - 安全的类型转换
