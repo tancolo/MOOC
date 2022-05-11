@@ -1,1 +1,1 @@
-# [English Readme](https://raw.githubusercontent.com/tancolo/MOOC/master/android-mvp/IDouban/readme-english.md)
+# [English Readme](https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/readme-english.md)
