@@ -1,3 +1,5 @@
+# [English Readme](https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/readme-english.md)
+
 # Android MVP实践
 本项目是[csdn慕课](http://edu.csdn.net/lecturer/course_list)配套的代码。
 
@@ -26,17 +28,6 @@
 1. master分支 1~15课程代码
 2. mvp-dev分支 完结所有课程代码 [课程重要参考]
 3. mvp-dev-more分支 其他新的小功能
-
-建议查看mvp-dev—more分支，IShuying-1.0.apk基于该分支编译生成！
-
-master分支资源文件太多，查看最新代码请使用如下方式获取 mvp-dev-more分支代码
-`git clone -b mvp-dev-more --single--branch https://github.com/tancolo/MOOC.git`
-
-
-# 您的支持
-1. 觉得不错，可以给我点个赞， 顺便告知其他小伙伴。
-2. 要是代码帮了您，可以考虑购买我的课程 [Android MVP实践](http://edu.csdn.net/course/detail/4753)
-或者给我捐赠， 多少随意！
-
-<img src="https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/zhifubao.jpg" width = "200" height = "200" alt="支付宝"><img src="https://github.com/tancolo/MOOC/blob/master/android-mvp/IDouban/resource/weixin.png" width = "200" height = "200" alt="微信">
+4. 建议查看mvp-dev—more分支，IShuying-1.0.apk基于该分支编译生成！
+5. master分支资源文件太多，查看最新代码请使用如下方式获取 mvp-dev-more分支代码 `git clone -b mvp-dev-more --single--branch https://github.com/tancolo/MOOC.git`
 
